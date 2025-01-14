@@ -1,4 +1,5 @@
 defmodule LorxWeb.Router do
+  alias Lorx.DashboardView
   alias DeviceController
   alias ScheduleController
   use LorxWeb, :router
@@ -20,6 +21,8 @@ defmodule LorxWeb.Router do
     pipe_through :browser
     resources "/devices", DeviceController
     resources "/schedules", ScheduleController
+    live "/dashboard", DashboardView
+
     get "/", PageController, :home
   end
 
