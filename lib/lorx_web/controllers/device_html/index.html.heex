@@ -1,0 +1,24 @@
+<.header>
+  Listing Devices
+  <:actions>
+    <.link href={~p"/devices/new"}>
+      <.button>New Device</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="devices" rows={@devices} row_click={&JS.navigate(~p"/devices/#{&1}")}>
+  <:col :let={device} label="Ip">{device.ip}</:col>
+  <:col :let={device} label="Name">{device.name}</:col>
+  <:action :let={device}>
+    <div class="sr-only">
+      <.link navigate={~p"/devices/#{device}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/devices/#{device}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={device}>
+    <.link href={~p"/devices/#{device}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

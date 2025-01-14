@@ -1,0 +1,8 @@
+<.header>
+  Edit Schedule {@schedule.id}
+  <:subtitle>Use this form to manage schedule records in your database.</:subtitle>
+</.header>
+
+<.schedule_form changeset={@changeset} devices={@devices} action={~p"/schedules/#{@schedule}"} />
+
+<.back navigate={~p"/schedules"}>Back to schedules</.back>

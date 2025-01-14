@@ -1,0 +1,8 @@
+<.header>
+  New Device
+  <:subtitle>Use this form to manage device records in your database.</:subtitle>
+</.header>
+
+<.device_form changeset={@changeset} action={~p"/devices"} />
+
+<.back navigate={~p"/devices"}>Back to devices</.back>

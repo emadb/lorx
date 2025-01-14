@@ -1,0 +1,8 @@
+<.header>
+  Edit Device {@device.id}
+  <:subtitle>Use this form to manage device records in your database.</:subtitle>
+</.header>
+
+<.device_form changeset={@changeset} action={~p"/devices/#{@device}"} />
+
+<.back navigate={~p"/devices"}>Back to devices</.back>

@@ -1,0 +1,26 @@
+<.header>
+  Listing Schedules
+  <:actions>
+    <.link href={~p"/schedules/new"}>
+      <.button>New Schedule</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="schedules" rows={@schedules} row_click={&JS.navigate(~p"/schedules/#{&1}")}>
+  <:col :let={schedule} label="Device">{schedule.device_id}</:col>
+  <:col :let={schedule} label="Start time">{schedule.start_time}</:col>
+  <:col :let={schedule} label="End time">{schedule.end_time}</:col>
+  <:col :let={schedule} label="Temp">{schedule.temp}</:col>
+  <:action :let={schedule}>
+    <div class="sr-only">
+      <.link navigate={~p"/schedules/#{schedule}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/schedules/#{schedule}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={schedule}>
+    <.link href={~p"/schedules/#{schedule}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

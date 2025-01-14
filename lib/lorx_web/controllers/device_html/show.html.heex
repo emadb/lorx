@@ -1,0 +1,16 @@
+<.header>
+  Device {@device.id}
+  <:subtitle>This is a device record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/devices/#{@device}/edit"}>
+      <.button>Edit device</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Ip">{@device.ip}</:item>
+  <:item title="Name">{@device.name}</:item>
+</.list>
+
+<.back navigate={~p"/devices"}>Back to devices</.back>
