@@ -65,9 +65,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-test:
-    runs-on:
-      group: lorx-suite
-      labels: prod
+    runs-on: [self-hosted]
     needs: [setup, package, tag-and-release]
     environment: prod
     env:
