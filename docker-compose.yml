@@ -1,7 +1,7 @@
 services:
   db:
     image: "postgres:17"
-    container_name: "lorx_db"
+    container_name: "lorx-db"
     ports:
       - "5432:5432"
     environment:
@@ -10,3 +10,8 @@ services:
       - POSTGRES_DB=lorx_dev
     volumes:
       - /var/lib/postgresql/data
+    networks:
+      - common
+networks:
+  common:
+    external: true
