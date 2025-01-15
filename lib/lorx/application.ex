@@ -19,7 +19,8 @@ defmodule Lorx.Application do
       # Start to serve requests, typically the last entry
       LorxWeb.Endpoint,
       {Registry, [keys: :unique, name: Lorx.Device.Registry]},
-      Lorx.DeviceSupervisor
+      Lorx.DeviceSupervisor,
+      {Lorx.Collector.Monitor, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

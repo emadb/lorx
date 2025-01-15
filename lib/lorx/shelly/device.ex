@@ -26,7 +26,10 @@ defmodule Lorx.Device do
     Process.send_after(self(), :check_temp, @polling_interval)
     current_temp = DeviceClient.get_temp(state.device.ip)
 
-    Phoenix.PubSub.broadcast(Lorx.PubSub, "dashboard", %{temp: current_temp})
+    Phoenix.PubSub.broadcast(Lorx.PubSub, "dashboard", %{
+      device_id: state.device.id,
+      temp: current_temp
+    })
 
     if abs(current_temp - state.prev_temp) > @threshold do
       sched = get_current_schedule(state.schedules)
