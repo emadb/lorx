@@ -1,0 +1,88 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - "release"
+      - "main"
+    tags-ignore:
+      - "**"
+
+env:
+  CONTAINER_REGISTRY_URL: ghcr.io
+  IMAGE_NAME: emadb/lorx
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.configure.outputs.version }}
+    steps:
+      - id: configure
+        name: Configure environment
+        run: |
+          VERSION=`date '+%Y.%m%d.%H%M'`
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+  package:
+    runs-on: ubuntu-latest
+    needs: setup
+    env:
+      VERSION: ${{ needs.setup.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to GitHub container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.CONTAINER_REGISTRY_URL }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push core image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          # build-args: |
+          #   NUGET_USERNAME=mrs-developer
+          #   NUGET_PASSWORD=${{ secrets.REGISTRY_TOKEN }}
+          tags: "${{ env.CONTAINER_REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}"
+          push: true
+
+  tag-and-release:
+    runs-on: ubuntu-latest
+    needs: setup
+    env:
+      VERSION: ${{ needs.setup.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Create tag and release
+        run: gh release create ${{ env.VERSION }} --title ${{ env.VERSION }} --target ${{ github.REF_NAME }} #./docker-compose.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-test:
+    runs-on:
+      group: lorx-suite
+      labels: prod
+    needs: [setup, package, tag-and-release]
+    environment: prod
+    env:
+      VERSION: ${{ needs.setup.outputs.version }}
+    steps:
+      - name: Download artifacts
+        run: gh release download ${{ env.VERSION }} -R ${{ github.REPOSITORY }} --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup infrastructure (if needed) and deploy artifacts
+        run: |
+          docker stack config --compose-file docker-compose.yml > final.docker-compose.yml
+          docker stack deploy --compose-file final.docker-compose.yml --resolve-image always --with-registry-auth biohub
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@lorx-db/lorx_dev
+          SECRET_KEY_BAS: =xhSxmI3mCFHOfGwkc483qhI1dkXSrw3yh6XniKW88HmcoDSAUcYaW7gObmfz8Occ
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          ENV_NAME: ${{ vars.ENV_NAME }}
