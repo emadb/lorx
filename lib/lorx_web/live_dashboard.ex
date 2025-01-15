@@ -7,7 +7,7 @@ defmodule LorxWeb.LiveDashboard do
   end
 
   def handle_info(%{device_id: device_id, temp: temp}, socket) do
-    send_update(LorxWeb.Lorx.DeviceWidget, id: device_id, temp: temp)
+    send_update(LorxWeb.Lorx.DeviceWidget, id: to_string(device_id), temperature: temp)
     {:noreply, assign(socket, temperature: temp)}
   end
 end
