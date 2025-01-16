@@ -1,4 +1,4 @@
-defmodule Lorx.Repo.Migrations.CreateSchedules do
+defmodule Lorx.Repo.Migrations.CreateTemperatureHistory do
   use Ecto.Migration
 
   def change do
