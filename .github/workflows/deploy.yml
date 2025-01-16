@@ -77,8 +77,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup infrastructure (if needed) and deploy artifacts
         run: |
-          docker stack config --compose-file docker-compose.yml > final.docker-compose.yml
-          docker stack deploy --compose-file final.docker-compose.yml --resolve-image always --with-registry-auth biohub
+          docker build -t lorx .
+          docker run -d --env-file .env -p 4000:4000 --name lorx-web --network common  lorx
         env:
           DATABASE_URL: postgresql://postgres:postgres@lorx-db/lorx_dev
           SECRET_KEY_BAS: =xhSxmI3mCFHOfGwkc483qhI1dkXSrw3yh6XniKW88HmcoDSAUcYaW7gObmfz8Occ
