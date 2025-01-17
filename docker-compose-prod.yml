@@ -3,6 +3,8 @@ version: "3.9"
 services:
   backend:
     image: ghcr.io/emadb/lorx:$VERSION
+    ports:
+      - "80:4000"
     deploy:
       mode: replicated
       replicas: 1
@@ -10,7 +12,7 @@ services:
         condition: any
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgresql/lorx_dev
-      - SECRET_KEY_BAS=xhSxmI3mCFHOfGwkc483qhI1dkXSrw3yh6XniKW88HmcoDSAUcYaW7gObmfz8Occ
+      - SECRET_KEY_BASE=xhSxmI3mCFHOfGwkc483qhI1dkXSrw3yh6XniKW88HmcoDSAUcYaW7gObmfz8Occ
       - ENV_NAME=$ENV_NAME
     networks:
       - common
