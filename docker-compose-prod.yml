@@ -9,7 +9,7 @@ services:
       restart_policy:
         condition: any
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@lorx-db/lorx_dev
+      - DATABASE_URL=postgresql://postgres:postgres@postgresql/lorx_dev
       - SECRET_KEY_BAS=xhSxmI3mCFHOfGwkc483qhI1dkXSrw3yh6XniKW88HmcoDSAUcYaW7gObmfz8Occ
       - ENV_NAME=$ENV_NAME
     networks:
