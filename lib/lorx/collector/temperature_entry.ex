@@ -6,6 +6,8 @@ defmodule Lorx.Collector.TemperatureEntry do
     field :device_id, :integer
     field :timestamp, :utc_datetime
     field :temp, :float
+    field :device_status, Ecto.Atom
+    field :target_temp, :float
 
     timestamps(type: :utc_datetime)
   end

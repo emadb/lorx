@@ -16,12 +16,15 @@ defmodule Lorx.Collector.Monitor do
     {:noreply, state}
   end
 
-  def handle_info(%{device_id: device_id, temp: temp}, state) do
-    IO.inspect(temp, label: "Lorx.Collector.Monitor")
-
+  def handle_info(
+        %{device_id: device_id, temp: temp, status: status, target_temp: target_temp},
+        state
+      ) do
     t = %TemperatureEntry{
       device_id: device_id,
       temp: temp,
+      device_status: status,
+      target_temp: target_temp,
       timestamp: DateTime.utc_now() |> DateTime.truncate(:second)
     }
 

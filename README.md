@@ -1,18 +1,13 @@
 # Lorx
 
-To start your Phoenix server:
-
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
-
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+## TODO
+- Scheda termostato dashboard
+  - Mostrare stato accensione
+  - Mostrare temperatura desiderata
+  - Mostrare schedulazione?
+- Grafico andamento temperatura
+- API per lettura temperatura esterna
+- Migliorare gestione soglia (isteresi)
+- Lorx.Device: Testare la logica per ridurre al minimo le chiamate
+- Introdurre struct per dati notifica (device_id, temp, target_temp, current_temp, ....)
+- Al primo caricamento non mostra i dati fino al successivo :check_temp (Device genserver)

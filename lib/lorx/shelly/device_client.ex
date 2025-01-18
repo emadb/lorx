@@ -18,4 +18,15 @@ defmodule DeviceClient do
     |> Tesla.get!()
     |> then(fn r -> r.status end)
   end
+
+  def get_status(ip) do
+    case "http://#{ip}/rpc/Switch.GetStatus?id=0"
+         |> Tesla.get!()
+         |> then(fn r -> r.body end)
+         |> Jason.decode!()
+         |> then(fn t -> Map.get(t, "output") end) do
+      false -> :off
+      true -> :on
+    end
+  end
 end

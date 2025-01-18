@@ -1,7 +1,7 @@
 defmodule Lorx.Device do
   use GenServer
   @threshold 0.2
-  @polling_interval 5000
+  @polling_interval 1000 * 60
 
   defp via_tuple(id), do: {:via, Registry, {Lorx.Device.Registry, id}}
 
@@ -14,7 +14,7 @@ defmodule Lorx.Device do
   end
 
   def handle_continue(:setup, state) do
-    Process.send_after(self(), :check_temp, @polling_interval)
+    Process.send_after(self(), :check_temp, 0)
 
     device = Lorx.Management.get_device!(state.id)
     schedules = Lorx.Management.list_schedules(device.id)
@@ -25,25 +25,26 @@ defmodule Lorx.Device do
   def handle_info(:check_temp, state) do
     Process.send_after(self(), :check_temp, @polling_interval)
     current_temp = DeviceClient.get_temp(state.device.ip)
+    current_status = DeviceClient.get_status(state.device.ip)
+    sched = get_current_schedule(state.schedules)
 
     Phoenix.PubSub.broadcast(Lorx.PubSub, "dashboard", %{
       device_id: state.device.id,
-      temp: current_temp
+      temp: current_temp,
+      status: current_status,
+      target_temp: sched.temp
     })
 
+    # TODO: Testare la logica per ridurre al minimo le chiamate
     if abs(current_temp - state.prev_temp) > @threshold do
-      sched = get_current_schedule(state.schedules)
-
-      IO.inspect(current_temp, label: "Current temp")
-
       new_status =
         cond do
-          sched.temp > current_temp + @threshold ->
+          sched.temp > current_temp + @threshold && current_status == :off ->
             IO.inspect({sched.temp, current_temp}, label: "Switch on")
             DeviceClient.switch_on(state.device.ip)
             :on
 
-          sched.temp <= current_temp - @threshold ->
+          sched.temp <= current_temp - @threshold && current_status == :on ->
             IO.inspect({sched.temp, current_temp}, label: "Switch off")
             DeviceClient.switch_off(state.device.ip)
             :off
