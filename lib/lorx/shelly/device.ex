@@ -10,7 +10,8 @@ defmodule Lorx.Device do
   end
 
   def init([id]) do
-    {:ok, %{id: id, device: 0, schedules: [], prev_temp: 0, status: nil}, {:continue, :setup}}
+    {:ok, %{id: id, device: 0, schedules: [], prev_temp: 0, temp: 0, status: nil},
+     {:continue, :setup}}
   end
 
   def handle_continue(:setup, state) do
@@ -19,7 +20,17 @@ defmodule Lorx.Device do
     device = Lorx.Management.get_device!(state.id)
     schedules = Lorx.Management.list_schedules(device.id)
 
-    {:noreply, %{state | device: device, schedules: schedules}}
+    current_temp = DeviceClient.get_temp(device.ip)
+    status = DeviceClient.get_status(device.ip)
+
+    {:noreply,
+     %{
+       state
+       | device: device,
+         schedules: schedules,
+         temp: current_temp,
+         status: status
+     }}
   end
 
   def handle_info(:check_temp, state) do
@@ -62,18 +73,15 @@ defmodule Lorx.Device do
     {:noreply, state}
   end
 
+  def get_status(id) do
+    GenServer.call(via_tuple(id), :get_status)
+  end
+
+  def handle_call(:get_status, _from, state) do
+    {:reply, {:ok, state}, state}
+  end
+
   defp get_current_schedule(schedules) do
-    # IO.inspect(schedules, label: "SCHEDS")
-
-    # Enum.find(schedules, fn s ->
-    #   IO.inspect(
-    #     {Time.utc_now(), s.start_time, s.end_time, Time.compare(s.start_time, Time.utc_now()),
-    #      Time.compare(s.end_time, Time.utc_now())}
-    #   )
-
-    #   Time.compare(s.start_time, Time.utc_now()) == :lt &&
-    #     Time.compare(s.end_time, Time.utc_now()) == :gt
-    # end)
     now = Time.utc_now()
 
     Enum.find(schedules, fn %{start_time: start_time, end_time: end_time} ->

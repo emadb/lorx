@@ -2,4 +2,37 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-/* This file is for your main application CSS */
+.widget {
+  text-align: left;
+  color: #000;
+}
+.widget .studio {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+.widget .on {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: #00c400;
+  border-radius: 50%;
+  margin-left: 5px;
+}
+
+.widget .off {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: #b8b8b8;
+  border-radius: 50%;
+  margin-left: 5px;
+}
+.widget .temperature {
+  font-size: 4rem;
+  font-weight: bold;
+  margin: 5px 0;
+}
+.widget .setpoint {
+  font-size: 1rem;
+  color: #888;
+}

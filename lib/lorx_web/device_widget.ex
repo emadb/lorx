@@ -1,20 +1,25 @@
 defmodule LorxWeb.Lorx.DeviceWidget do
-  alias Lorx.Management
+  alias Lorx.Device
   use Phoenix.LiveComponent
 
   def render(assigns) do
     ~H"""
-    <div class="hero">
-      Current temperature: {@temperature}°C <br /> Status: {@status}
-      <br /> Target: {@target_temp}
+    <div class="widget">
+      <div class="studio">
+        STUDIO <span class={to_string(@status)}></span>
+      </div>
+      <div class="temperature">{@temperature}°C</div>
+      <div class="setpoint">{@target_temp}°C</div>
     </div>
     """
   end
 
   def mount(socket) do
-    device = Management.get_device!(1)
-    temp = DeviceClient.get_temp(device.ip)
-    status = DeviceClient.get_status(device.ip)
+    {:ok,
+     %{
+       temp: temp,
+       status: status
+     }} = Device.get_status(1)
 
     {:ok, assign(socket, temperature: temp, status: status, target_temp: "?")}
   end
