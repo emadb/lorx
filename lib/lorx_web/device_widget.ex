@@ -21,6 +21,8 @@ defmodule LorxWeb.Lorx.DeviceWidget do
        status: status
      }} = Device.get_status(1)
 
+    IO.inspect({temp, status}, label: "DeviceWidget mount")
+
     {:ok, assign(socket, temperature: temp, status: status, target_temp: "?")}
   end
 

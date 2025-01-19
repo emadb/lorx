@@ -10,7 +10,7 @@
   font-size: 1.2rem;
   font-weight: bold;
 }
-.widget .on {
+.widget .heating {
   display: inline-block;
   width: 10px;
   height: 10px;
@@ -19,7 +19,7 @@
   margin-left: 5px;
 }
 
-.widget .off {
+.widget .idle {
   display: inline-block;
   width: 10px;
   height: 10px;

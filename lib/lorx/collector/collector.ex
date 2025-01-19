@@ -17,14 +17,14 @@ defmodule Lorx.Collector.Monitor do
   end
 
   def handle_info(
-        %{device_id: device_id, temp: temp, status: status, target_temp: target_temp},
+        %Lorx.NotifyTemp{} = data,
         state
       ) do
     t = %TemperatureEntry{
-      device_id: device_id,
-      temp: temp,
-      device_status: status,
-      target_temp: target_temp,
+      device_id: data.device_id,
+      temp: data.temp,
+      device_status: data.status,
+      target_temp: data.target_temp,
       timestamp: DateTime.utc_now() |> DateTime.truncate(:second)
     }
 

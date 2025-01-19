@@ -23,7 +23,10 @@ defmodule LorxWeb.ScheduleControllerTest do
 
   describe "create schedule" do
     test "redirects to show when data is valid", %{conn: conn} do
-      conn = post(conn, ~p"/schedules", schedule: @create_attrs)
+      device = device_fixture()
+
+      conn =
+        post(conn, ~p"/schedules", schedule: Map.merge(@create_attrs, %{device_id: device.id}))
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == ~p"/schedules/#{id}"
@@ -65,7 +68,7 @@ defmodule LorxWeb.ScheduleControllerTest do
   end
 
   describe "delete schedule" do
-    setup [:create_schedule]
+    setup [:create_device, :create_schedule]
 
     test "deletes chosen schedule", %{conn: conn, schedule: schedule} do
       conn = delete(conn, ~p"/schedules/#{schedule}")
@@ -77,8 +80,14 @@ defmodule LorxWeb.ScheduleControllerTest do
     end
   end
 
+  defp create_device(_) do
+    device = device_fixture()
+    %{device: device}
+  end
+
   defp create_schedule(_) do
-    schedule = schedule_fixture()
-    %{schedule: schedule}
+    device = device_fixture()
+    schedule = schedule_fixture(%{device_id: device.id})
+    %{schedule: schedule, device: device}
   end
 end

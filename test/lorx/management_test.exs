@@ -11,17 +11,26 @@ defmodule Lorx.ManagementTest do
     @invalid_attrs %{temp: nil, start_time: nil, end_time: nil}
 
     test "list_schedules/0 returns all schedules" do
-      schedule = schedule_fixture()
+      device = device_fixture()
+      schedule = schedule_fixture(%{device_id: device.id})
       assert Management.list_schedules() == [schedule]
     end
 
     test "get_schedule!/1 returns the schedule with given id" do
-      schedule = schedule_fixture()
+      device = device_fixture()
+      schedule = schedule_fixture(%{device_id: device.id})
       assert Management.get_schedule!(schedule.id) == schedule
     end
 
     test "create_schedule/1 with valid data creates a schedule" do
-      valid_attrs = %{temp: 120.5, start_time: ~T[14:00:00], end_time: ~T[14:00:00]}
+      device = device_fixture()
+
+      valid_attrs = %{
+        device_id: device.id,
+        temp: 120.5,
+        start_time: ~T[14:00:00],
+        end_time: ~T[14:00:00]
+      }
 
       assert {:ok, %Schedule{} = schedule} = Management.create_schedule(valid_attrs)
       assert schedule.temp == 120.5
@@ -34,7 +43,8 @@ defmodule Lorx.ManagementTest do
     end
 
     test "update_schedule/2 with valid data updates the schedule" do
-      schedule = schedule_fixture()
+      device = device_fixture()
+      schedule = schedule_fixture(%{device_id: device.id})
       update_attrs = %{temp: 456.7, start_time: ~T[15:01:01], end_time: ~T[15:01:01]}
 
       assert {:ok, %Schedule{} = schedule} = Management.update_schedule(schedule, update_attrs)
@@ -44,19 +54,22 @@ defmodule Lorx.ManagementTest do
     end
 
     test "update_schedule/2 with invalid data returns error changeset" do
-      schedule = schedule_fixture()
+      device = device_fixture()
+      schedule = schedule_fixture(%{device_id: device.id})
       assert {:error, %Ecto.Changeset{}} = Management.update_schedule(schedule, @invalid_attrs)
       assert schedule == Management.get_schedule!(schedule.id)
     end
 
     test "delete_schedule/1 deletes the schedule" do
-      schedule = schedule_fixture()
+      device = device_fixture()
+      schedule = schedule_fixture(%{device_id: device.id})
       assert {:ok, %Schedule{}} = Management.delete_schedule(schedule)
       assert_raise Ecto.NoResultsError, fn -> Management.get_schedule!(schedule.id) end
     end
 
     test "change_schedule/1 returns a schedule changeset" do
-      schedule = schedule_fixture()
+      device = device_fixture()
+      schedule = schedule_fixture(%{device_id: device.id})
       assert %Ecto.Changeset{} = Management.change_schedule(schedule)
     end
   end

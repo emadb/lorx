@@ -11,6 +11,7 @@ defmodule Lorx.ManagementFixtures do
     {:ok, schedule} =
       attrs
       |> Enum.into(%{
+        device_id: 1,
         end_time: ~T[14:00:00],
         start_time: ~T[14:00:00],
         temp: 120.5

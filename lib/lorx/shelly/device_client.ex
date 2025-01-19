@@ -25,8 +25,8 @@ defmodule DeviceClient do
          |> then(fn r -> r.body end)
          |> Jason.decode!()
          |> then(fn t -> Map.get(t, "output") end) do
-      false -> :off
-      true -> :on
+      false -> :idle
+      true -> :heating
     end
   end
 end
