@@ -14,7 +14,7 @@ env:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted]
     outputs:
       version: ${{ steps.configure.outputs.version }}
     steps:
@@ -25,7 +25,7 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
   package:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted]
     needs: setup
     env:
       VERSION: ${{ needs.setup.outputs.version }}
@@ -51,7 +51,7 @@ jobs:
           push: true
 
   tag-and-release:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted]
     needs: setup
     env:
       VERSION: ${{ needs.setup.outputs.version }}
