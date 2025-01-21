@@ -13,3 +13,4 @@
 - Al primo caricamento non mostra i dati fino al successivo :check_temp (Device genserver)
 - Design scheda termostato
 - Autenticazione
+- Deploy
