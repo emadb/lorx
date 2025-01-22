@@ -11,12 +11,16 @@ defmodule DeviceClient do
     "http://#{ip}/rpc/Switch.Set?id=0&on=true"
     |> Tesla.get!()
     |> then(fn r -> r.status end)
+
+    :heating
   end
 
   def switch_off(ip) do
     "http://#{ip}/rpc/Switch.Set?id=0&on=false"
     |> Tesla.get!()
     |> then(fn r -> r.status end)
+
+    :idle
   end
 
   def get_status(ip) do

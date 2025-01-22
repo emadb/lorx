@@ -28,29 +28,19 @@ defmodule Lorx.DeviceState do
     schedules = Lorx.Management.list_schedules(state.device.id)
     sched = get_current_schedule(schedules)
 
-    # TODO: Testare la logica per ridurre al minimo le chiamate
-    if abs(current_temp - state.prev_temp) > @threshold do
-      new_status =
-        cond do
-          sched.temp > current_temp + @threshold && current_status == :idle ->
-            IO.inspect({sched.temp, current_temp}, label: "Switch on")
-            DeviceClient.switch_on(state.device.ip)
-            :heating
+    new_status =
+      cond do
+        sched.temp > current_temp + @threshold && current_status == :idle ->
+          DeviceClient.switch_on(state.device.ip)
 
-          sched.temp <= current_temp - @threshold && current_status == :heating ->
-            IO.inspect({sched.temp, current_temp}, label: "Switch off")
-            DeviceClient.switch_off(state.device.ip)
-            :idle
+        sched.temp <= current_temp - @threshold && current_status == :heating ->
+          DeviceClient.switch_off(state.device.ip)
 
-          true ->
-            IO.inspect({current_temp, sched.temp})
-            :idle
-        end
+        true ->
+          current_status
+      end
 
-      %__MODULE__{state | prev_temp: state.temp, status: new_status, temp: current_temp}
-    else
-      %__MODULE__{state | prev_temp: state.temp, temp: current_temp}
-    end
+    %__MODULE__{state | prev_temp: state.temp, status: new_status, temp: current_temp}
   end
 
   defp get_current_schedule(schedules) do
