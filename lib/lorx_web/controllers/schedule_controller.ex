@@ -23,7 +23,8 @@ defmodule LorxWeb.ScheduleController do
         |> redirect(to: ~p"/schedules/#{schedule}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        devices = Management.list_devices()
+        render(conn, :new, changeset: changeset, devices: devices)
     end
   end
 
@@ -49,7 +50,8 @@ defmodule LorxWeb.ScheduleController do
         |> redirect(to: ~p"/schedules/#{schedule}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, schedule: schedule, changeset: changeset)
+        devices = Management.list_devices()
+        render(conn, :edit, schedule: schedule, changeset: changeset, devices: devices)
     end
   end
 
