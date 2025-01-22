@@ -1,6 +1,6 @@
 defmodule Lorx.DeviceState do
   @threshold 0.2
-  defstruct [:id, :device, :schedules, :prev_temp, :temp, :status]
+  defstruct [:id, :device, :schedules, :prev_temp, :temp, :status, :target_temp]
 
   def init(id) do
     %__MODULE__{id: id, device: 0, schedules: [], prev_temp: 0, temp: 0, status: nil}
@@ -12,13 +12,15 @@ defmodule Lorx.DeviceState do
 
     current_temp = DeviceClient.get_temp(device.ip)
     status = DeviceClient.get_status(device.ip)
+    sched = get_current_schedule(schedules)
 
     %__MODULE__{
       state
       | device: device,
         schedules: schedules,
         temp: current_temp,
-        status: status
+        status: status,
+        target_temp: sched.temp
     }
   end
 
@@ -40,7 +42,13 @@ defmodule Lorx.DeviceState do
           current_status
       end
 
-    %__MODULE__{state | prev_temp: state.temp, status: new_status, temp: current_temp}
+    %__MODULE__{
+      state
+      | prev_temp: state.temp,
+        status: new_status,
+        temp: current_temp,
+        target_temp: sched.temp
+    }
   end
 
   defp get_current_schedule(schedules) do

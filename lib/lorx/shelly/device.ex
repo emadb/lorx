@@ -32,7 +32,7 @@ defmodule Lorx.Device do
       device_id: new_state.device.id,
       temp: new_state.temp,
       status: new_state.status,
-      target_temp: new_state.temp
+      target_temp: new_state.target_temp
     })
 
     {:noreply, new_state}
