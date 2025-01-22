@@ -1,4 +1,5 @@
 defmodule LorxWeb.LiveDashboard do
+  alias Lorx.DeviceState
   use LorxWeb, :live_view
   alias Lorx.Device
 
@@ -6,12 +7,13 @@ defmodule LorxWeb.LiveDashboard do
     Phoenix.PubSub.subscribe(Lorx.PubSub, "dashboard")
 
     {:ok,
-     %{
+     %DeviceState{
        temp: temp,
-       status: status
+       status: status,
+       target_temp: target_temp
      }} = Device.get_status(1)
 
-    {:ok, assign(socket, temp: temp, status: status, target_temp: "?")}
+    {:ok, assign(socket, temp: temp, status: status, target_temp: target_temp)}
   end
 
   def handle_info(
