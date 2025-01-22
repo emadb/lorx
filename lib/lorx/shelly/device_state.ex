@@ -47,9 +47,9 @@ defmodule Lorx.DeviceState do
             :idle
         end
 
-      %__MODULE__{state | prev_temp: current_temp, status: new_status}
+      %__MODULE__{state | prev_temp: state.temp, status: new_status, temp: current_temp}
     else
-      %__MODULE__{state | prev_temp: current_temp}
+      %__MODULE__{state | prev_temp: state.temp, temp: current_temp}
     end
   end
 
