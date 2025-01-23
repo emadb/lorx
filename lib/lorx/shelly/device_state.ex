@@ -35,7 +35,7 @@ defmodule Lorx.DeviceState do
         sched.temp > current_temp + @threshold && current_status == :idle ->
           DeviceClient.switch_on(state.device.ip)
 
-        sched.temp <= current_temp - @threshold && current_status == :heating ->
+        sched.temp < current_temp - @threshold && current_status == :heating ->
           DeviceClient.switch_off(state.device.ip)
 
         true ->
