@@ -1,5 +1,5 @@
 defmodule Lorx.DeviceState do
-  @threshold 0.2
+  @threshold 0.5
   defstruct [:id, :device, :schedules, :prev_temp, :temp, :status, :target_temp]
 
   def init(id) do

@@ -20,13 +20,6 @@ defmodule LorxWeb.LiveDashboard do
         %Lorx.NotifyTemp{} = data,
         socket
       ) do
-    send_update(LorxWeb.Lorx.DeviceWidget,
-      id: to_string(data.device_id),
-      temp: data.temp,
-      status: data.status,
-      target_temp: data.target_temp
-    )
-
     {:noreply,
      assign(socket, temp: data.temp, status: data.status, target_temp: data.target_temp)}
   end

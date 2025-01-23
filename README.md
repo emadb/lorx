@@ -13,4 +13,5 @@
 - Al primo caricamento non mostra i dati fino al successivo :check_temp (Device genserver)
 - Design scheda termostato
 - Autenticazione
-- Deploy
+x Deploy
+- Auto/Manual mode: se in manual si accende/spegne manualmente, in auto segue lo schedule
