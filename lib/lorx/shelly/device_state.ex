@@ -52,7 +52,8 @@ defmodule Lorx.DeviceState do
   end
 
   defp get_current_schedule(schedules) do
-    now = Time.utc_now()
+    %NaiveDateTime{hour: h, minute: m, second: s} = NaiveDateTime.local_now()
+    {:ok, now} = Time.new(h, m, s)
 
     Enum.find(schedules, fn %{start_time: start_time, end_time: end_time} ->
       case Time.compare(start_time, end_time) do
