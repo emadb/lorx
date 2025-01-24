@@ -11,7 +11,6 @@ defmodule Lorx.Management.Schedule do
     timestamps(type: :utc_datetime)
   end
 
-  @doc false
   def changeset(schedule, attrs) do
     schedule
     |> cast(attrs, [:start_time, :end_time, :temp, :device_id])

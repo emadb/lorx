@@ -22,8 +22,7 @@ defmodule LorxWeb.Router do
     resources "/devices", DeviceController
     resources "/schedules", ScheduleController
     live "/dashboard", LiveDashboard
-
-    get "/", PageController, :home
+    live "/", LiveDashboard
   end
 
   # Other scopes may use custom stacks.
