@@ -15,3 +15,5 @@ x Al primo caricamento non mostra i dati fino al successivo :check_temp (Device 
 - Autenticazione
 x Deploy
 - Auto/Manual mode: se in manual si accende/spegne manualmente, in auto segue lo schedule
+- Programmazione settimanale
+- Multi tenant (multi house con supporto cloud)

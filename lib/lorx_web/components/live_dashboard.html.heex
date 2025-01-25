@@ -1,12 +1,16 @@
-<header>
-  <a href="/schedules">Schedulazione</a>
-  <a href="/devices">Termostati</a>
-</header>
+<div class="card bg-base-100 shadow-xl">
+  <div class="card-body">
+    <h2 class="card-title">
+      STUDIO
+      <div class={[
+        "badge",
+        if(@status == :idle, do: "badge-ghost", else: "badge-primary")
+      ]}>
+      </div>
+    </h2>
 
-<div class="widget">
-  <div class="studio">
-    STUDIO <span class={to_string(@status)}></span>
+    <h1 class="text-5xl font-bold">{@temp}°C</h1>
+
+    <div class="text-neutral-content">{@target_temp}°C</div>
   </div>
-  <div class="temperature">{@temp}°C</div>
-  <div class="setpoint">{@target_temp}°C</div>
 </div>
