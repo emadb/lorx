@@ -96,4 +96,4 @@ USER nobody
 # ENTRYPOINT ["/tini", "--"]
 
 CMD ["/app/bin/lorx", "start"]
-# CMD ["sh", "-c", "/app/bin/lorx eval Lorx.Release.migrate && /app/bin/lorx start"]
+# CMD ["sh", "-c", "/app/bin/migrate && /app/bin/lorx start"]
