@@ -5,7 +5,7 @@ defmodule Lorx.DeviceStateTest do
   use ExUnit.Case
   import Mock
 
-  defp stub(temp, target_temp, status) do
+  defp stub(temp, target_temp, status, days \\ [true, true, true, true, true, true, true]) do
     [
       {DeviceClient, [],
        [
@@ -20,9 +20,10 @@ defmodule Lorx.DeviceStateTest do
            [
              %Schedule{
                temp: target_temp,
-               start_time: DateTime.add(DateTime.utc_now(), -10),
-               end_time: DateTime.add(DateTime.utc_now(), +10),
-               device_id: 1
+               start_time: NaiveDateTime.add(NaiveDateTime.local_now(), -10),
+               end_time: NaiveDateTime.add(NaiveDateTime.local_now(), +10),
+               device_id: 1,
+               days: days
              }
            ]
          end
@@ -71,6 +72,37 @@ defmodule Lorx.DeviceStateTest do
       assert new_state.status == :idle
 
       assert_called(DeviceClient.switch_off("0.0.0.0"))
+    end
+  end
+
+  test "current_temp=18 target_temp=20 only for today status=:idle => should switch on" do
+    today = Date.day_of_week(Date.utc_today())
+
+    days =
+      List.update_at([false, false, false, false, false, false, false], today - 1, fn _ ->
+        true
+      end)
+
+    with_mocks stub(18, 20, :idle, days) do
+      new_state =
+        DeviceState.update_state(initial_state(0, :idle))
+
+      assert new_state.status == :heating
+      assert new_state.temp == 18
+      assert_called(DeviceClient.switch_on("0.0.0.0"))
+    end
+  end
+
+  test "always off current_temp=18 target_temp=20 status=:idle => should remain idle" do
+    days = [false, false, false, false, false, false, false]
+
+    with_mocks stub(18, 20, :idle, days) do
+      new_state =
+        DeviceState.update_state(initial_state(0, :idle))
+
+      assert new_state.status == :idle
+      assert new_state.temp == 18
+      assert_not_called(DeviceClient.switch_on("0.0.0.0"))
     end
   end
 end

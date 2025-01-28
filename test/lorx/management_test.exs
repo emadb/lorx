@@ -8,7 +8,12 @@ defmodule Lorx.ManagementTest do
 
     import Lorx.ManagementFixtures
 
-    @invalid_attrs %{temp: nil, start_time: nil, end_time: nil}
+    @invalid_attrs %{
+      temp: nil,
+      start_time: nil,
+      end_time: nil,
+      days: [true, true, true, true, true, true, true]
+    }
 
     test "list_schedules/0 returns all schedules" do
       device = device_fixture()
@@ -29,7 +34,8 @@ defmodule Lorx.ManagementTest do
         device_id: device.id,
         temp: 120.5,
         start_time: ~T[14:00:00],
-        end_time: ~T[14:00:00]
+        end_time: ~T[14:00:00],
+        days: ["true", "true", "true", "true", "true", "true", "true"]
       }
 
       assert {:ok, %Schedule{} = schedule} = Management.create_schedule(valid_attrs)

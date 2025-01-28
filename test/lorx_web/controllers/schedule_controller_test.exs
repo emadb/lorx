@@ -3,9 +3,21 @@ defmodule LorxWeb.ScheduleControllerTest do
 
   import Lorx.ManagementFixtures
 
-  @create_attrs %{temp: 120.5, start_time: ~T[14:00:00], end_time: ~T[14:00:00]}
-  @update_attrs %{temp: 456.7, start_time: ~T[15:01:01], end_time: ~T[15:01:01]}
-  @invalid_attrs %{temp: nil, start_time: nil, end_time: nil}
+  @create_attrs %{
+    temp: 120.5,
+    start_time: ~T[14:00:00],
+    end_time: ~T[14:00:00]
+  }
+  @update_attrs %{
+    temp: 456.7,
+    start_time: ~T[15:01:01],
+    end_time: ~T[15:01:01]
+  }
+  @invalid_attrs %{
+    temp: nil,
+    start_time: nil,
+    end_time: nil
+  }
 
   describe "index" do
     test "lists all schedules", %{conn: conn} do
