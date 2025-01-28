@@ -29,15 +29,17 @@ defmodule Lorx.DeviceState do
     current_status = DeviceClient.get_status(state.device.ip)
     schedules = Lorx.Management.list_schedules(state.device.id)
     sched = get_current_schedule(schedules)
-    day = Date.day_of_week(Date.utc_today())
 
     new_status =
       cond do
-        Enum.at(sched.days, day - 1) && sched.temp > current_temp + @threshold &&
+        is_nil(sched) ->
+          current_status
+
+        sched.temp > current_temp + @threshold &&
             current_status == :idle ->
           DeviceClient.switch_on(state.device.ip)
 
-        Enum.at(sched.days, day - 1) && sched.temp < current_temp - @threshold &&
+        sched.temp < current_temp - @threshold &&
             current_status == :heating ->
           DeviceClient.switch_off(state.device.ip)
 
@@ -50,19 +52,21 @@ defmodule Lorx.DeviceState do
       | prev_temp: state.temp,
         status: new_status,
         temp: current_temp,
-        target_temp: sched.temp
+        target_temp: if(is_nil(sched), do: 0, else: sched.temp)
     }
   end
 
   defp get_current_schedule(schedules) do
     %NaiveDateTime{hour: h, minute: m, second: s} = NaiveDateTime.local_now()
     {:ok, now} = Time.new(h, m, s)
+    day = Date.day_of_week(Date.utc_today())
 
-    Enum.find(schedules, fn %{start_time: start_time, end_time: end_time, days: days} ->
+    schedules
+    |> Enum.filter(fn %{days: days} -> Enum.at(days, day - 1) end)
+    |> Enum.find(fn %{start_time: start_time, end_time: end_time} ->
       case Time.compare(start_time, end_time) do
         :lt ->
-          Time.compare(now, start_time) != :lt and
-            Time.compare(now, end_time) == :lt
+          Time.compare(now, start_time) != :lt and Time.compare(now, end_time) == :lt
 
         _ ->
           Time.compare(now, start_time) != :lt or Time.compare(now, end_time) == :lt
