@@ -40,10 +40,25 @@ defmodule LorxWeb.ScheduleController do
     render(conn, :edit, schedule: schedule, changeset: changeset, devices: devices)
   end
 
-  def update(conn, %{"id" => id, "schedule" => schedule_params}) do
-    schedule = Management.get_schedule!(id)
+  defp parse_days(p) do
+    %{
+      "monday" => monday,
+      "tuesday" => tuesday,
+      "wednesday" => wednesday,
+      "thursday" => thursday,
+      "friday" => friday,
+      "saturday" => saturday,
+      "sunday" => sunday
+    } = p
 
-    case Management.update_schedule(schedule, schedule_params) do
+    [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+  end
+
+  def update(conn, %{"id" => id, "schedule" => schedule_params} = params) do
+    schedule = Management.get_schedule!(id)
+    days = parse_days(params)
+
+    case Management.update_schedule(schedule, Map.merge(schedule_params, %{"days" => days})) do
       {:ok, schedule} ->
         conn
         |> put_flash(:info, "Schedule updated successfully.")

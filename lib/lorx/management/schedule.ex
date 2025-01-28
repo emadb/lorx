@@ -7,13 +7,14 @@ defmodule Lorx.Management.Schedule do
     field :start_time, :time
     field :end_time, :time
     field :device_id, :id
+    field :days, {:array, :string}
 
     timestamps(type: :utc_datetime)
   end
 
   def changeset(schedule, attrs) do
     schedule
-    |> cast(attrs, [:start_time, :end_time, :temp, :device_id])
+    |> cast(attrs, [:start_time, :end_time, :temp, :device_id, :days])
     |> validate_required([:start_time, :end_time, :temp, :device_id])
   end
 end
