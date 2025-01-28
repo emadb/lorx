@@ -12,11 +12,17 @@ defmodule LorxWeb.ScheduleController do
   def new(conn, _params) do
     devices = Management.list_devices()
     changeset = Management.change_schedule(%Schedule{})
-    render(conn, :new, changeset: changeset, devices: devices)
+
+    render(conn, :new,
+      changeset: changeset,
+      devices: devices
+    )
   end
 
-  def create(conn, %{"schedule" => schedule_params}) do
-    case Management.create_schedule(schedule_params) do
+  def create(conn, %{"schedule" => schedule_params} = params) do
+    days = parse_days(params)
+
+    case Management.create_schedule(Map.merge(schedule_params, %{"days" => days})) do
       {:ok, schedule} ->
         conn
         |> put_flash(:info, "Schedule created successfully.")

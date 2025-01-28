@@ -11,43 +11,64 @@
     type="checkbox"
     name="monday"
     label="Monday"
-    value={Enum.at(Map.get(f[:days], :value), 0)}
+    value={
+      (Map.get(f[:days], :value) || [false, false, false, false, false, false, false])
+      |> Enum.at(0)
+    }
   />
   <.input
     type="checkbox"
     name="tuesday"
     label="Tuesday"
-    value={Enum.at(Map.get(f[:days], :value), 1)}
+    value={
+      (Map.get(f[:days], :value) || [false, false, false, false, false, false, false])
+      |> Enum.at(1)
+    }
   />
   <.input
     type="checkbox"
     name="wednesday"
     label="Wednesday"
-    value={Enum.at(Map.get(f[:days], :value), 2)}
+    value={
+      (Map.get(f[:days], :value) || [false, false, false, false, false, false, false])
+      |> Enum.at(2)
+    }
   />
   <.input
     type="checkbox"
     name="thursday"
     label="Thursday"
-    value={Enum.at(Map.get(f[:days], :value), 3)}
+    value={
+      (Map.get(f[:days], :value) || [false, false, false, false, false, false, false])
+      |> Enum.at(3)
+    }
   />
   <.input
     type="checkbox"
     name="friday"
     label="Friday"
-    value={Enum.at(Map.get(f[:days], :value), 4)}
+    value={
+      (Map.get(f[:days], :value) || [false, false, false, false, false, false, false])
+      |> Enum.at(4)
+    }
   />
   <.input
     type="checkbox"
     name="saturday"
     label="Saturday"
-    value={Enum.at(Map.get(f[:days], :value), 5)}
+    value={
+      (Map.get(f[:days], :value) || [false, false, false, false, false, false, false])
+      |> Enum.at(5)
+    }
   />
   <.input
     type="checkbox"
     name="sunday"
     label="Sunday"
-    value={Enum.at(Map.get(f[:days], :value), 6)}
+    value={
+      (Map.get(f[:days], :value) || [false, false, false, false, false, false, false])
+      |> Enum.at(6)
+    }
   />
   <:actions>
     <.button>Save Schedule</.button>
