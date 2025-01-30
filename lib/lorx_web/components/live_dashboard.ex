@@ -1,26 +1,39 @@
 defmodule LorxWeb.LiveDashboard do
   alias Lorx.DeviceState
+  alias Lorx.Management
   use LorxWeb, :live_view
   alias Lorx.Device
 
   def mount(_params, _session, socket) do
     Phoenix.PubSub.subscribe(Lorx.PubSub, "dashboard")
 
-    {:ok,
-     %DeviceState{
-       temp: temp,
-       status: status,
-       target_temp: target_temp
-     }} = Device.get_status(1)
+    devices =
+      Management.list_devices()
+      |> Enum.map(fn d ->
+        elem(Device.get_status(d.id), 1)
+      end)
+      |> Enum.map(fn d ->
+        %{
+          id: d.id,
+          name: d.device.name,
+          temp: d.temp,
+          status: d.status,
+          target_temp: d.target_temp
+        }
+      end)
 
-    {:ok, assign(socket, temp: temp, status: status, target_temp: target_temp)}
+    {:ok, assign(socket, devices: devices)}
   end
 
   def handle_info(
         %Lorx.NotifyTemp{} = data,
         socket
       ) do
-    {:noreply,
-     assign(socket, temp: data.temp, status: data.status, target_temp: data.target_temp)}
+    # {:noreply,
+
+    send_update(LorxWeb.DeviceComponent, id: data.device_id, data: data)
+
+    # assign(socket, temp: data.temp, status: data.status, target_temp: data.target_temp)}
+    {:noreply, socket}
   end
 end
