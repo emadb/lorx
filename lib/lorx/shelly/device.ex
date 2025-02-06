@@ -1,7 +1,7 @@
 defmodule Lorx.Device do
   use GenServer
 
-  @polling_interval 1000 * 60
+  @polling_interval 1000 * 60 * 5
 
   defp via_tuple(id), do: {:via, Registry, {Lorx.Device.Registry, id}}
 
