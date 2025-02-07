@@ -1,7 +1,7 @@
 defmodule Lorx.Device do
   use GenServer
 
-  @polling_interval 1000 * 60 * 5
+  @polling_interval 1000 * 60
 
   defp via_tuple(id), do: {:via, Registry, {Lorx.Device.Registry, id}}
 
@@ -28,12 +28,14 @@ defmodule Lorx.Device do
     Process.send_after(self(), :check_temp, @polling_interval)
     new_state = Lorx.DeviceState.update_state(state)
 
-    Phoenix.PubSub.broadcast(Lorx.PubSub, "dashboard", %Lorx.NotifyTemp{
-      device_id: new_state.device.id,
-      temp: new_state.temp,
-      status: new_state.status,
-      target_temp: new_state.target_temp
-    })
+    if new_state.updated? do
+      Phoenix.PubSub.broadcast(Lorx.PubSub, "dashboard", %Lorx.NotifyTemp{
+        device_id: new_state.device.id,
+        temp: new_state.temp,
+        status: new_state.status,
+        target_temp: new_state.target_temp
+      })
+    end
 
     {:noreply, new_state}
   end

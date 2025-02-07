@@ -1,6 +1,6 @@
 defmodule Lorx.DeviceState do
   @threshold 0.5
-  defstruct [:id, :device, :schedules, :prev_temp, :temp, :status, :target_temp]
+  defstruct [:id, :device, :schedules, :prev_temp, :temp, :status, :target_temp, :updated?]
 
   def init(id) do
     %__MODULE__{id: id, device: 0, schedules: [], prev_temp: 0, temp: 0, status: nil}
@@ -47,12 +47,17 @@ defmodule Lorx.DeviceState do
           current_status
       end
 
-    %__MODULE__{
+    new_state = %__MODULE__{
       state
       | prev_temp: state.temp,
         status: new_status,
         temp: current_temp,
         target_temp: if(is_nil(sched), do: 0, else: sched.temp)
+    }
+
+    %__MODULE__{
+      new_state
+      | updated?: new_state != state
     }
   end
 
