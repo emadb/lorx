@@ -65,9 +65,9 @@ defmodule Lorx.DeviceState do
     %NaiveDateTime{hour: h, minute: m, second: s} = NaiveDateTime.local_now()
     {:ok, now} = Time.new(h, m, s)
     day = Date.day_of_week(Date.utc_today())
-
+    # TODO: gestire il true false come boolean invece che stringa
     schedules
-    |> Enum.filter(fn %{days: days} -> Enum.at(days, day - 1) end)
+    |> Enum.filter(fn %{days: days} -> Enum.at(days, day - 1) == "true" end)
     |> Enum.find(fn %{start_time: start_time, end_time: end_time} ->
       case Time.compare(start_time, end_time) do
         :lt ->
