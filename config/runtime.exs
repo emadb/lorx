@@ -20,6 +20,9 @@ if System.get_env("PHX_SERVER") do
   config :lorx, LorxWeb.Endpoint, server: true
 end
 
+config :lorx, :device,
+  polling_interval: String.to_integer(System.get_env("DEVICE_POLLING_INTERVAL") || "300000")
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

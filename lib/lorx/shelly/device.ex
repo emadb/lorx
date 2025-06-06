@@ -1,8 +1,6 @@
 defmodule Lorx.Device do
   use GenServer
 
-  @polling_interval 1000 * 60
-
   defp via_tuple(id), do: {:via, Registry, {Lorx.Device.Registry, id}}
 
   def start_link([id]) do
@@ -25,7 +23,8 @@ defmodule Lorx.Device do
   end
 
   def handle_info(:check_temp, state) do
-    Process.send_after(self(), :check_temp, @polling_interval)
+    polling_interval = Application.get_env(:lorx, :device)[:polling_interval]
+    Process.send_after(self(), :check_temp, polling_interval)
     new_state = Lorx.DeviceState.update_state(state)
 
     if new_state.updated? do

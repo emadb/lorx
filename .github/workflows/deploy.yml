@@ -77,3 +77,4 @@ jobs:
           SECRET_KEY_BAS: =xhSxmI3mCFHOfGwkc483qhI1dkXSrw3yh6XniKW88HmcoDSAUcYaW7gObmfz8Occ
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           ENV_NAME: ${{ vars.ENV_NAME }}
+          DEVICE_POLLING_INTERVAL: ${{ vars.DEVICE_POLLING_INTERVAL }}

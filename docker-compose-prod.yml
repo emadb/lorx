@@ -14,6 +14,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgresql/lorx_dev
       - SECRET_KEY_BASE=xhSxmI3mCFHOfGwkc483qhI1dkXSrw3yh6XniKW88HmcoDSAUcYaW7gObmfz8Occ
       - ENV_NAME=$ENV_NAME
+      - DEVICE_POLLING_INTERVAL=300000
     networks:
       - common
 
