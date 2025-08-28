@@ -15,10 +15,15 @@
     <:col :let={schedule} label="End time">{Calendar.strftime(schedule.end_time, "%H:%M")}</:col>
     <:col :let={schedule} label="Temp">{schedule.temp}</:col>
     <:col :let={schedule} label="Days">
-      {Enum.map(schedule.days, fn
-        "true" -> "o"
-        "false" -> "-"
-      end)}
+      <div class="flex gap-1">
+        <span
+          :for={{label, active} <- Enum.zip(~w(M T W T F S S), schedule.days)}
+          class={"badge badge-sm " <> if(active in [true, "true"], do: "badge-primary", else: "badge-ghost opacity-60")}
+          title={label}
+        >
+          {label}
+        </span>
+      </div>
     </:col>
     <:action :let={schedule}>
       <div class="sr-only">
