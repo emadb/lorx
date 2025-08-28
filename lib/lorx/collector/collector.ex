@@ -3,12 +3,14 @@ defmodule Lorx.Collector.Monitor do
   alias Lorx.Repo
   alias Lorx.Collector.TemperatureEntry
 
+  @save_interval 1000 * 60 * 15
+
   def start_link([]) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   def init([]) do
-    {:ok, %{}, {:continue, :setup}}
+    {:ok, %{last_saved: DateTime.utc_now()}, {:continue, :setup}}
   end
 
   def handle_continue(:setup, state) do
@@ -20,16 +22,22 @@ defmodule Lorx.Collector.Monitor do
         %Lorx.NotifyTemp{} = data,
         state
       ) do
-    t = %TemperatureEntry{
-      device_id: data.device_id,
-      temp: data.temp,
-      device_status: data.status,
-      target_temp: data.target_temp,
-      timestamp: DateTime.utc_now() |> DateTime.truncate(:second)
-    }
+    delta = DateTime.add(state.last_saved, @save_interval, :minute)
 
-    Repo.insert!(t)
+    if DateTime.before?(delta, DateTime.utc_now()) do
+      t = %TemperatureEntry{
+        device_id: data.device_id,
+        temp: data.temp,
+        device_status: data.status,
+        target_temp: data.target_temp,
+        timestamp: DateTime.utc_now() |> DateTime.truncate(:second)
+      }
 
-    {:noreply, state}
+      Repo.insert!(t)
+      new_state = %{state | last_saved: DateTime.utc_now()}
+      {:noreply, new_state}
+    else
+      {:noreply, state}
+    end
   end
 end
