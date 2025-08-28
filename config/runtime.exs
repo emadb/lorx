@@ -21,7 +21,8 @@ if System.get_env("PHX_SERVER") do
 end
 
 config :lorx, :device,
-  polling_interval: String.to_integer(System.get_env("DEVICE_POLLING_INTERVAL") || "300000")
+  polling_interval: String.to_integer(System.get_env("DEVICE_POLLING_INTERVAL") || "300000"),
+  saving_interval: String.to_integer(System.get_env("SAVING_INTERVAL") || "900000")
 
 if config_env() == :prod do
   database_url =

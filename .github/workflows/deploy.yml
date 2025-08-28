@@ -78,3 +78,4 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           ENV_NAME: ${{ vars.ENV_NAME }}
           DEVICE_POLLING_INTERVAL: ${{ vars.DEVICE_POLLING_INTERVAL }}
+          SAVING_INTERVAL: ${{ vars.SAVING_INTERVAL }}

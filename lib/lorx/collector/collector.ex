@@ -3,8 +3,6 @@ defmodule Lorx.Collector.Monitor do
   alias Lorx.Repo
   alias Lorx.Collector.TemperatureEntry
 
-  @save_interval 1000 * 60 * 15
-
   def start_link([]) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
@@ -22,7 +20,9 @@ defmodule Lorx.Collector.Monitor do
         %Lorx.NotifyTemp{} = data,
         state
       ) do
-    delta = DateTime.add(state.last_saved, @save_interval, :minute)
+    saving_interval = Application.get_env(:lorx, :device)[:saving_interval]
+
+    delta = DateTime.add(state.last_saved, saving_interval, :minute)
 
     if DateTime.before?(delta, DateTime.utc_now()) do
       t = %TemperatureEntry{

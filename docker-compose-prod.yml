@@ -15,6 +15,7 @@ services:
       - SECRET_KEY_BASE=xhSxmI3mCFHOfGwkc483qhI1dkXSrw3yh6XniKW88HmcoDSAUcYaW7gObmfz8Occ
       - ENV_NAME=$ENV_NAME
       - DEVICE_POLLING_INTERVAL=300000
+      - SAVING_INTERVAL=900000
     networks:
       - common
 
