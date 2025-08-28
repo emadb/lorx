@@ -1,12 +1,13 @@
 defmodule Lorx.Management.Schedule do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Lorx.Management.Device
 
   schema "schedules" do
     field :temp, :float
     field :start_time, :time
     field :end_time, :time
-    field :device_id, :id
+    belongs_to :device, Device
     field :days, {:array, :string}
 
     timestamps(type: :utc_datetime)

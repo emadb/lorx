@@ -9,8 +9,8 @@
 </.header>
 
 <.list>
-  <:item title="Start time">{@schedule.start_time}</:item>
-  <:item title="End time">{@schedule.end_time}</:item>
+  <:item title="Start time">{Calendar.strftime(@schedule.start_time, "%H:%M")}</:item>
+  <:item title="End time">{Calendar.strftime(@schedule.end_time, "%H:%M")}</:item>
   <:item title="Temp">{@schedule.temp}</:item>
 </.list>
 

@@ -8,9 +8,11 @@
     </:actions>
   </.header>
   <.table id="schedules" rows={@schedules} row_click={&JS.navigate(~p"/schedules/#{&1}")}>
-    <:col :let={schedule} label="Device">{schedule.device_id}</:col>
-    <:col :let={schedule} label="Start time">{schedule.start_time}</:col>
-    <:col :let={schedule} label="End time">{schedule.end_time}</:col>
+    <:col :let={schedule} label="Device">{schedule.device.name}</:col>
+    <:col :let={schedule} label="Start time">
+      {Calendar.strftime(schedule.start_time, "%H:%M")}
+    </:col>
+    <:col :let={schedule} label="End time">{Calendar.strftime(schedule.end_time, "%H:%M")}</:col>
     <:col :let={schedule} label="Temp">{schedule.temp}</:col>
     <:col :let={schedule} label="Days">
       {Enum.map(schedule.days, fn

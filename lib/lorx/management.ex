@@ -33,12 +33,15 @@ defmodule Lorx.Management do
   end
 
   def list_schedules do
-    Repo.all(Schedule)
+    Schedule
+    |> preload(:device)
+    |> Repo.all()
   end
 
   def list_schedules(device_id) do
     Schedule
     |> where([d], d.device_id == ^device_id)
+    |> preload(:device)
     |> Repo.all()
   end
 
