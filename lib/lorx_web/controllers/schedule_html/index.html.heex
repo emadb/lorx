@@ -20,15 +20,28 @@
         {List.first(schedules).device.name}
       </span>
       <:subtitle>
-        IP: {List.first(schedules).device.ip}
+        IP: {List.first(schedules).device.ip} · {length(schedules)} schedule{if length(schedules) !=
+                                                                                  1,
+                                                                                do: "s",
+                                                                                else: ""}
       </:subtitle>
+      <:actions>
+        <.link href={~p"/schedules/new?device_id=#{List.first(schedules).device_id}"}>
+          <.button class="bg-primary hover:bg-primary/90">New schedule</.button>
+        </.link>
+      </:actions>
     </.header>
 
     <.table
       id={"schedules-" <> to_string(List.first(schedules).device_id)}
-      rows={schedules}
+      rows={Enum.sort_by(schedules, & &1.start_time)}
       row_click={&JS.navigate(~p"/schedules/#{&1}")}
     >
+      <:col :let={schedule} label="Status">
+        <span class={"badge badge-sm " <> if(active_now?(schedule), do: "badge-success", else: "badge-ghost opacity-60")}>
+          {if active_now?(schedule), do: "Active now", else: "—"}
+        </span>
+      </:col>
       <:col :let={schedule} label="Start time">
         {Calendar.strftime(schedule.start_time, "%H:%M")}
       </:col>
@@ -51,11 +64,23 @@
         <div class="sr-only">
           <.link navigate={~p"/schedules/#{schedule}"}>Show</.link>
         </div>
-        <.link navigate={~p"/schedules/#{schedule}/edit"}>Edit</.link>
+        <.link
+          navigate={~p"/schedules/#{schedule}/edit"}
+          class="inline-flex items-center p-2 rounded hover:bg-zinc-100"
+          aria-label="Edit schedule"
+        >
+          <.icon name="hero-pencil-square-solid" class="h-5 w-5" />
+        </.link>
       </:action>
       <:action :let={schedule}>
-        <.link href={~p"/schedules/#{schedule}"} method="delete" data-confirm="Are you sure?">
-          Delete
+        <.link
+          href={~p"/schedules/#{schedule}"}
+          method="delete"
+          data-confirm="Are you sure?"
+          class="inline-flex items-center p-2 rounded hover:bg-zinc-100"
+          aria-label="Delete schedule"
+        >
+          <.icon name="hero-trash-solid" class="h-5 w-5 text-rose-600" />
         </.link>
       </:action>
     </.table>
