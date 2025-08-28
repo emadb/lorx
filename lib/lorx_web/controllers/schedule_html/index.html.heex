@@ -1,16 +1,42 @@
 <div class="p-10">
+  <% selected_device_id = @conn.params["device_id"]
+
+  devices =
+    @schedules
+    |> Enum.uniq_by(& &1.device_id)
+    |> Enum.sort_by(&String.downcase(&1.device.name || ""))
+
+  filtered_schedules =
+    if selected_device_id in [nil, ""],
+      do: @schedules,
+      else: Enum.filter(@schedules, &(to_string(&1.device_id) == selected_device_id)) %>
   <.header>
     Listing Schedules
     <:actions>
-      <.link href={~p"/schedules/new"}>
-        <.button>New Schedule</.button>
-      </.link>
+      <form method="get" action={~p"/schedules"} class="mr-2">
+        <label for="device_id" class="sr-only">Device</label>
+        <select
+          id="device_id"
+          name="device_id"
+          class="select select-sm"
+          onchange="this.form.submit()"
+        >
+          <option value="" selected={selected_device_id in [nil, ""]}>All devices</option>
+          <option
+            :for={sc <- devices}
+            value={to_string(sc.device_id)}
+            selected={to_string(sc.device_id) == (selected_device_id || "")}
+          >
+            {sc.device.name || "Unknown"}
+          </option>
+        </select>
+      </form>
     </:actions>
   </.header>
   <div
     :for={
       {_device_id, schedules} <-
-        Enum.group_by(@schedules, & &1.device_id)
+        Enum.group_by(filtered_schedules, & &1.device_id)
         |> Enum.sort_by(fn {_, [first | _]} -> String.downcase(first.device.name || "") end)
     }
     class="mt-8"
