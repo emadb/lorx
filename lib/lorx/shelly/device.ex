@@ -27,13 +27,17 @@ defmodule Lorx.Device do
     Process.send_after(self(), :check_temp, polling_interval)
     new_state = Lorx.DeviceState.update_state(state)
 
+    evt_payload = %Lorx.NotifyTemp{
+      device_id: new_state.device.id,
+      temp: new_state.temp,
+      status: new_state.status,
+      target_temp: new_state.target_temp
+    }
+
+    Phoenix.PubSub.broadcast(Lorx.PubSub, "temperature_notification", evt_payload)
+
     if new_state.updated? do
-      Phoenix.PubSub.broadcast(Lorx.PubSub, "dashboard", %Lorx.NotifyTemp{
-        device_id: new_state.device.id,
-        temp: new_state.temp,
-        status: new_state.status,
-        target_temp: new_state.target_temp
-      })
+      Phoenix.PubSub.broadcast(Lorx.PubSub, "dashboard", evt_payload)
     end
 
     {:noreply, new_state}

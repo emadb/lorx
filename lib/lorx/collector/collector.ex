@@ -12,7 +12,7 @@ defmodule Lorx.Collector.Monitor do
   end
 
   def handle_continue(:setup, state) do
-    Phoenix.PubSub.subscribe(Lorx.PubSub, "dashboard")
+    Phoenix.PubSub.subscribe(Lorx.PubSub, "temperature_notification")
     {:noreply, state}
   end
 
@@ -22,7 +22,7 @@ defmodule Lorx.Collector.Monitor do
       ) do
     saving_interval = Application.get_env(:lorx, :device)[:saving_interval]
 
-    delta = DateTime.add(state.last_saved, saving_interval, :minute)
+    delta = DateTime.add(state.last_saved, div(saving_interval, 1000), :second)
 
     if DateTime.before?(delta, DateTime.utc_now()) do
       t = %TemperatureEntry{
