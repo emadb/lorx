@@ -8,7 +8,9 @@ defmodule Lorx.Collector.Monitor do
   end
 
   def init([]) do
-    {:ok, %{last_saved: DateTime.utc_now()}, {:continue, :setup}}
+    saving_interval = Application.get_env(:lorx, :device)[:saving_interval]
+    initial_state = %{last_saved: DateTime.utc_now(), saving_interval: saving_interval}
+    {:ok, initial_state, {:continue, :setup}}
   end
 
   def handle_continue(:setup, state) do
@@ -16,15 +18,8 @@ defmodule Lorx.Collector.Monitor do
     {:noreply, state}
   end
 
-  def handle_info(
-        %Lorx.NotifyTemp{} = data,
-        state
-      ) do
-    saving_interval = Application.get_env(:lorx, :device)[:saving_interval]
-
-    delta = DateTime.add(state.last_saved, div(saving_interval, 1000), :second)
-
-    if DateTime.before?(delta, DateTime.utc_now()) do
+  def handle_info(%Lorx.NotifyTemp{} = data, state) do
+    if interval_elapsed?(state.last_saved, state.saving_interval) do
       t = %TemperatureEntry{
         device_id: data.device_id,
         temp: data.temp,
@@ -39,5 +34,10 @@ defmodule Lorx.Collector.Monitor do
     else
       {:noreply, state}
     end
+  end
+
+  defp interval_elapsed?(last_saved, saving_interval) do
+    delta = DateTime.add(last_saved, div(saving_interval, 1000), :second)
+    DateTime.before?(delta, DateTime.utc_now())
   end
 end
