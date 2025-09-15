@@ -5,7 +5,12 @@ defmodule Lorx.DeviceStateTest do
   use ExUnit.Case
   import Mock
 
-  defp stub(temp, target_temp, status, days \\ [true, true, true, true, true, true, true]) do
+  defp stub(
+         temp,
+         target_temp,
+         status,
+         days \\ ["true", "true", "true", "true", "true", "true", "true"]
+       ) do
     [
       {DeviceClient, [],
        [
@@ -38,7 +43,8 @@ defmodule Lorx.DeviceStateTest do
       schedules: [],
       prev_temp: prev_temp,
       temp: 0,
-      status: status
+      status: status,
+      mode: :auto
     }
   end
 
@@ -79,9 +85,13 @@ defmodule Lorx.DeviceStateTest do
     today = Date.day_of_week(Date.utc_today())
 
     days =
-      List.update_at([false, false, false, false, false, false, false], today - 1, fn _ ->
-        true
-      end)
+      List.update_at(
+        ["false", "false", "false", "false", "false", "false", "false"],
+        today - 1,
+        fn _ ->
+          "true"
+        end
+      )
 
     with_mocks stub(18, 20, :idle, days) do
       new_state =
@@ -94,7 +104,7 @@ defmodule Lorx.DeviceStateTest do
   end
 
   test "always off current_temp=18 target_temp=20 status=:idle => should remain idle" do
-    days = [false, false, false, false, false, false, false]
+    days = ["false", "false", "false", "false", "false", "false", "false"]
 
     with_mocks stub(18, 20, :idle, days) do
       new_state =
@@ -103,6 +113,24 @@ defmodule Lorx.DeviceStateTest do
       assert new_state.status == :idle
       assert new_state.temp == 18
       assert_not_called(DeviceClient.switch_on("0.0.0.0"))
+    end
+  end
+
+  test "manual on forces heating regardless of schedule/temperature" do
+    with_mocks stub(25, 10, :idle) do
+      state = %{initial_state(0, :idle) | mode: :on}
+      new_state = DeviceState.update_state(state)
+      assert new_state.status == :heating
+      assert_called(DeviceClient.switch_on("0.0.0.0"))
+    end
+  end
+
+  test "manual off forces idle regardless of schedule/temperature" do
+    with_mocks stub(10, 30, :heating) do
+      state = %{initial_state(0, :heating) | mode: :off}
+      new_state = DeviceState.update_state(state)
+      assert new_state.status == :idle
+      assert_called(DeviceClient.switch_off("0.0.0.0"))
     end
   end
 end

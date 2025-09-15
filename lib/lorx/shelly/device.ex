@@ -15,6 +15,10 @@ defmodule Lorx.Device do
     GenServer.call(via_tuple(id), :get_status)
   end
 
+  def set_mode(id, mode) when mode in [:auto, :on, :off] do
+    GenServer.cast(via_tuple(id), {:set_mode, mode})
+  end
+
   def handle_continue(:setup, state) do
     Process.send_after(self(), :check_temp, 0)
     new_state = Lorx.DeviceState.load(state)
@@ -31,7 +35,8 @@ defmodule Lorx.Device do
       device_id: new_state.device.id,
       temp: new_state.temp,
       status: new_state.status,
-      target_temp: new_state.target_temp
+      target_temp: new_state.target_temp,
+      mode: new_state.mode
     }
 
     Phoenix.PubSub.broadcast(Lorx.PubSub, "temperature_notification", evt_payload)
@@ -43,8 +48,23 @@ defmodule Lorx.Device do
     {:noreply, new_state}
   end
 
-  # non tornare tutto lo stato
+  # TODO: non tornare tutto lo stato
   def handle_call(:get_status, _from, state) do
     {:reply, {:ok, state}, state}
+  end
+
+  def handle_cast({:set_mode, mode}, state) do
+    new_state = Lorx.DeviceState.update_state(%{state | mode: mode})
+
+    evt_payload = %Lorx.NotifyTemp{
+      device_id: new_state.device.id,
+      temp: new_state.temp,
+      status: new_state.status,
+      target_temp: new_state.target_temp,
+      mode: new_state.mode
+    }
+
+    Phoenix.PubSub.broadcast(Lorx.PubSub, "dashboard", evt_payload)
+    {:noreply, new_state}
   end
 end

@@ -1,9 +1,9 @@
 defmodule Lorx.DeviceState do
   @threshold 0.5
-  defstruct [:id, :device, :schedules, :prev_temp, :temp, :status, :target_temp, :updated?]
+  defstruct [:id, :device, :schedules, :prev_temp, :temp, :status, :target_temp, :updated?, :mode]
 
   def init(id) do
-    %__MODULE__{id: id, device: 0, schedules: [], prev_temp: 0, temp: 0, status: nil}
+    %__MODULE__{id: id, device: 0, schedules: [], prev_temp: 0, temp: 0, status: nil, mode: :auto}
   end
 
   def load(state) do
@@ -20,11 +20,46 @@ defmodule Lorx.DeviceState do
         schedules: schedules,
         temp: current_temp,
         status: status,
-        target_temp: sched.temp
+        target_temp: sched.temp,
+        mode: :auto
     }
   end
 
-  def update_state(state) do
+  def update_state(%__MODULE__{mode: :on} = state) do
+    current_temp = DeviceClient.get_temp(state.device.ip)
+    current_status = DeviceClient.get_status(state.device.ip)
+
+    new_status =
+      if current_status != :heating,
+        do: DeviceClient.switch_on(state.device.ip),
+        else: current_status
+
+    %__MODULE__{
+      state
+      | prev_temp: state.temp,
+        status: new_status,
+        temp: current_temp
+    }
+  end
+
+  def update_state(%__MODULE__{mode: :off} = state) do
+    current_temp = DeviceClient.get_temp(state.device.ip)
+    current_status = DeviceClient.get_status(state.device.ip)
+
+    new_status =
+      if current_status != :idle,
+        do: DeviceClient.switch_off(state.device.ip),
+        else: current_status
+
+    %__MODULE__{
+      state
+      | prev_temp: state.temp,
+        status: new_status,
+        temp: current_temp
+    }
+  end
+
+  def update_state(%__MODULE__{mode: :auto} = state) do
     current_temp = DeviceClient.get_temp(state.device.ip)
     current_status = DeviceClient.get_status(state.device.ip)
     schedules = Lorx.Management.list_schedules(state.device.id)

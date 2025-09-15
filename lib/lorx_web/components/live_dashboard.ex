@@ -17,7 +17,8 @@ defmodule LorxWeb.LiveDashboard do
           name: d.device.name,
           temp: d.temp,
           status: d.status,
-          target_temp: d.target_temp
+          target_temp: d.target_temp,
+          mode: d.mode
         }
       end)
 
