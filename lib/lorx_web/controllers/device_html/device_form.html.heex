@@ -2,8 +2,14 @@
   <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
   </.error>
-  <.input field={f[:ip]} type="text" label="Ip" />
-  <.input field={f[:name]} type="text" label="Name" />
+  <div class="flex flex-col sm:flex-row gap-4">
+      <div class="flex-1">
+        <.input field={f[:ip]} type="text" label="IP" />
+      </div>
+      <div class="flex-1">
+        <.input field={f[:name]} type="text" label="Name" />
+      </div>
+  </div>
   <:actions>
     <.button>Save Device</.button>
   </:actions>

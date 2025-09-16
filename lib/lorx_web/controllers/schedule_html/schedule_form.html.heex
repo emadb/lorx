@@ -2,11 +2,24 @@
   <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
   </.error>
-  <.input field={f[:device_id]} type="select" options={Enum.map(@devices, &{&1.name, &1.id})} />
-
-  <.input field={f[:start_time]} type="time" label="Start time" />
-  <.input field={f[:end_time]} type="time" label="End time" />
-  <.input field={f[:temp]} type="number" label="Temp" step="any" />
+  <div class="flex flex-col sm:flex-row gap-4">
+      <div class="flex-1">
+        <.input field={f[:device_id]} type="select" class="FFFF" options={Enum.map(@devices, &{&1.name, &1.id})} label="Room"/>
+      </div>
+    <div class="flex-1">
+      <.input field={f[:temp]} type="number" label="Temperature" step="any" />
+    </div>
+  </div>
+  <div class="flex flex-col sm:flex-row gap-4">
+    <div class="flex-1">
+      <.input field={f[:start_time]} type="time" label="Start time" />
+    </div>
+    <div class="flex-1">
+      <.input field={f[:end_time]} type="time" label="End time" />
+    </div>
+  </div>
+  
+  <div class="flex flex-col sm:flex-row gap-4">
   <.input
     type="checkbox"
     name="monday"
@@ -70,6 +83,7 @@
       |> Enum.at(6)
     }
   />
+  </div>
   <:actions>
     <.button>Save Schedule</.button>
   </:actions>

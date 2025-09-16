@@ -90,12 +90,8 @@
         <div class="sr-only">
           <.link navigate={~p"/schedules/#{schedule}"}>Show</.link>
         </div>
-        <.link
-          navigate={~p"/schedules/#{schedule}/edit"}
-          class="inline-flex items-center p-2 rounded hover:bg-zinc-100"
-          aria-label="Edit schedule"
-        >
-          <.icon name="hero-pencil-square-solid" class="h-5 w-5" />
+        <.link navigate={~p"/schedules/#{schedule}/edit"}>
+          Edit
         </.link>
       </:action>
       <:action :let={schedule}>
@@ -103,10 +99,8 @@
           href={~p"/schedules/#{schedule}"}
           method="delete"
           data-confirm="Are you sure?"
-          class="inline-flex items-center p-2 rounded hover:bg-zinc-100"
-          aria-label="Delete schedule"
         >
-          <.icon name="hero-trash-solid" class="h-5 w-5 text-rose-600" />
+          Delete
         </.link>
       </:action>
     </.table>
