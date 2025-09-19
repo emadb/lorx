@@ -12,7 +12,7 @@ defmodule Lorx.DeviceState do
 
     current_temp = DeviceClient.get_temp(device.ip)
     status = DeviceClient.get_status(device.ip)
-    sched = get_current_schedule(schedules) || %{temp: 18}
+    sched = get_current_schedule(schedules)
 
     %__MODULE__{
       state
@@ -20,10 +20,13 @@ defmodule Lorx.DeviceState do
         schedules: schedules,
         temp: current_temp,
         status: status,
-        target_temp: sched.temp,
+        target_temp: get_temp(sched),
         mode: :auto
     }
   end
+
+  defp get_temp(nil), do: 0
+  defp get_temp(sched), do: sched.temp
 
   def update_state(%__MODULE__{mode: :on} = state) do
     current_temp = DeviceClient.get_temp(state.device.ip)
