@@ -13,19 +13,29 @@ defmodule Lorx.Management do
   def get_device!(id), do: Repo.get!(Device, id)
 
   def create_device(attrs \\ %{}) do
-    %Device{}
-    |> Device.changeset(attrs)
-    |> Repo.insert()
+    {:ok, d} =
+      %Device{}
+      |> Device.changeset(attrs)
+      |> Repo.insert()
+
+    Lorx.DeviceSupervisor.start_child(d)
+    {:ok, d}
   end
 
   def update_device(%Device{} = device, attrs) do
-    device
-    |> Device.changeset(attrs)
-    |> Repo.update()
+    {:ok, d} =
+      device
+      |> Device.changeset(attrs)
+      |> Repo.update()
+
+    Lorx.DeviceSupervisor.restart_child(d)
+    {:ok, d}
   end
 
   def delete_device(%Device{} = device) do
-    Repo.delete(device)
+    res = Repo.delete(device)
+    Lorx.DeviceSupervisor.stop_child(device)
+    res
   end
 
   def change_device(%Device{} = device, attrs \\ %{}) do

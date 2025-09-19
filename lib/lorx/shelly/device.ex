@@ -1,5 +1,5 @@
 defmodule Lorx.Device do
-  use GenServer
+  use GenServer, restart: :transient
 
   defp via_tuple(id), do: {:via, Registry, {Lorx.Device.Registry, id}}
 
@@ -17,6 +17,10 @@ defmodule Lorx.Device do
 
   def set_mode(id, mode) when mode in [:auto, :on, :off] do
     GenServer.cast(via_tuple(id), {:set_mode, mode})
+  end
+
+  def stop(id) do
+    GenServer.stop(via_tuple(id), :normal)
   end
 
   def handle_continue(:setup, state) do

@@ -10,11 +10,20 @@ defmodule Lorx.DeviceSupervisor do
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
-  defp start_child(device) do
+  def start_child(device) do
     DynamicSupervisor.start_child(
       __MODULE__,
       {Lorx.Device, [device.id]}
     )
+  end
+
+  def stop_child(device) do
+    Lorx.Device.stop(device.id)
+  end
+
+  def restart_child(device) do
+    stop_child(device)
+    start_child(device)
   end
 
   def spawn_children do
