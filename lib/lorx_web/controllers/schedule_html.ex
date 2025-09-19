@@ -73,4 +73,48 @@ defmodule LorxWeb.ScheduleHTML do
         if length(act) in [0, 7], do: nil, else: Enum.join(act, ", ")
     end
   end
+
+  @doc false
+  def group_schedules_by_day(schedules) do
+    day_names = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"]
+    
+    # Initialize empty map for each day
+    empty_week = 
+      day_names
+      |> Enum.with_index()
+      |> Enum.into(%{}, fn {day_name, index} -> {index, %{name: day_name, schedules: []}} end)
+    
+    # Group schedules by day
+    schedules
+    |> Enum.reduce(empty_week, fn schedule, acc ->
+      schedule.days
+      |> Enum.with_index()
+      |> Enum.reduce(acc, fn {is_active, day_index}, day_acc ->
+        if is_active in [true, "true"] do
+          schedule_with_time = %{
+            start_time: schedule.start_time,
+            end_time: schedule.end_time,
+            temp: schedule.temp,
+            id: schedule.id
+          }
+          
+          update_in(day_acc[day_index].schedules, &[schedule_with_time | &1])
+        else
+          day_acc
+        end
+      end)
+    end)
+    |> Enum.map(fn {_index, day_data} ->
+      # Sort schedules by start time for each day
+      sorted_schedules = Enum.sort_by(day_data.schedules, & &1.start_time)
+      %{day_data | schedules: sorted_schedules}
+    end)
+  end
+
+  @doc false
+  def format_time_slot(start_time, end_time) do
+    start_str = Calendar.strftime(start_time, "%H:%M")
+    end_str = Calendar.strftime(end_time, "%H:%M")
+    "#{start_str} - #{end_str}"
+  end
 end
