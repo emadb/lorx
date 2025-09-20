@@ -1,4 +1,4 @@
-defmodule LorxWeb.TemperatureEntryHTML do
+defmodule LorxWeb.TemperatureHistoryHTML do
   use LorxWeb, :html
 
   embed_templates "temperature_entry_html/*"
