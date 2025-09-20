@@ -1,0 +1,83 @@
+<div class="p-8">
+  <.header>
+    Storico Temperature
+    <:actions>
+      <.link href={~p"/temperature_history"} class="btn btn-sm">Reset filtri</.link>
+    </:actions>
+  </.header>
+  <form
+    method="get"
+    action={~p"/temperature_history"}
+    class="mt-4 grid grid-cols-1 md:grid-cols-5 gap-4 items-end"
+  >
+    <div>
+      <label class="label"><span class="label-text">Dispositivo</span></label>
+      <select name="device_id" class="select select-bordered select-sm w-full">
+        <option
+          :for={d <- @devices}
+          value={to_string(d.id)}
+          selected={to_string(d.id) == (@selected_device_id || "")}
+        >
+          {d.name}
+        </option>
+      </select>
+    </div>
+    <div>
+      <label class="label"><span class="label-text">Dal</span></label>
+      <input
+        type="datetime-local"
+        name="from"
+        class="input input-sm input-bordered w-full"
+        value={Calendar.strftime(@from, "%Y-%m-%dT%H:%M:%S")}
+      />
+    </div>
+    <div>
+      <label class="label"><span class="label-text">Al</span></label>
+      <input
+        type="datetime-local"
+        name="to"
+        class="input input-sm input-bordered w-full"
+        value={Calendar.strftime(@to, "%Y-%m-%dT%H:%M:%S")}
+      />
+    </div>
+    <div class="md:col-span-2 flex gap-2">
+      <button class="btn btn-primary btn-sm" type="submit">Filtra</button>
+    </div>
+  </form>
+
+  <div class="overflow-x-auto mt-8">
+    <table class="table table-zebra w-full text-sm">
+      <thead>
+        <tr>
+          <th>Device</th>
+          <th>Timestamp (UTC)</th>
+          <th>Temperatura</th>
+          <th>Stato</th>
+          <th>Temp. Desiderata</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr :for={e <- @entries} class="hover">
+          <td>
+            {Enum.find(@devices, fn d -> d.id == e.device_id end)
+            |> case do
+              nil -> "#" <> to_string(e.device_id)
+              d -> d.name
+            end}
+          </td>
+          <td>{format_timestamp(e.timestamp)}</td>
+          <td>{Float.round(e.temp, 1)}°C</td>
+          <td>
+            <span class="badge badge-sm">{e.device_status || "?"}</span>
+          </td>
+          <td>{if e.target_temp, do: Float.round(e.target_temp, 1), else: "—"}</td>
+        </tr>
+        <tr :if={length(@entries) == 0}>
+          <td colspan="5" class="text-center italic text-base-content/50">
+            Nessun dato trovato per i filtri selezionati
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

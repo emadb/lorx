@@ -86,6 +86,7 @@ defmodule Lorx.Management do
   def get_history(from, to) do
     TemperatureEntry
     |> where([t], t.timestamp >= ^from and t.timestamp <= ^to)
+    |> order_by([t], asc: t.timestamp)
     |> Repo.all()
   end
 
@@ -95,6 +96,26 @@ defmodule Lorx.Management do
 
     TemperatureEntry
     |> where([t], t.timestamp >= ^start_of_today and t.timestamp <= ^end_of_today)
+    |> order_by([t], asc: t.timestamp)
+    |> Repo.all()
+  end
+
+  def get_history(from, to, device_id) when device_id in [nil, "", :all] do
+    get_history(from, to)
+  end
+
+  def get_history(from, to, device_id) do
+    TemperatureEntry
+    |> where([t], t.timestamp >= ^from and t.timestamp <= ^to and t.device_id == ^device_id)
+    |> order_by([t], asc: t.timestamp)
+    |> Repo.all()
+  end
+
+  def list_history_devices(from, to) do
+    TemperatureEntry
+    |> where([t], t.timestamp >= ^from and t.timestamp <= ^to)
+    |> select([t], t.device_id)
+    |> distinct(true)
     |> Repo.all()
   end
 end

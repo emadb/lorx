@@ -2,6 +2,7 @@ defmodule LorxWeb.Router do
   alias DashboardController
   alias DeviceController
   alias ScheduleController
+  alias TemperatureHistoryController
   use LorxWeb, :router
 
   pipeline :browser do
@@ -21,6 +22,7 @@ defmodule LorxWeb.Router do
     pipe_through :browser
     resources "/devices", DeviceController
     resources "/schedules", ScheduleController
+    get "/temperature_history", TemperatureHistoryController, :index
     live "/dashboard", LiveDashboard
     live "/", LiveDashboard
   end
