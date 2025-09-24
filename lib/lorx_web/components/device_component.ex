@@ -10,11 +10,14 @@ defmodule LorxWeb.DeviceComponent do
       <div class="card-body flex flex-row justify-between items-start">
         <div class="flex flex-col gap-2">
           <h2 class="card-title">
-            {@name}
             <div class={[
               "badge",
-              if(@status == :idle, do: "badge-ghost", else: "badge-primary")
+              if(@status == :idle,
+                do: "badge-ghost",
+                else: "badge-success"
+              )
             ]} />
+            {@name}
           </h2>
 
           <h1 class="text-5xl font-bold">{@temp}°C</h1>
