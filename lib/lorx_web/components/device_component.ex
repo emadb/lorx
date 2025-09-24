@@ -21,20 +21,20 @@ defmodule LorxWeb.DeviceComponent do
           <div class="text-neutral-content">{@target_temp}°C</div>
         </div>
 
-        <div id="toggles" class="pl-4">
-          <div class="btn-group">
+        <div class="pl-4">
+          <div class="flex flex-col gap-1">
             <button
               type="button"
               phx-click="set_mode"
               phx-target={@myself}
-              phx-value-mode="off"
+              phx-value-mode="auto"
               class={[
-                  "btn btn-xs sm:btn-sm whitespace-nowrap",
-                @mode == :off && "btn-primary btn-active",
-                @mode != :off && "btn-outline"
+                "btn btn-xs sm:btn-sm whitespace-nowrap w-16",
+                @mode == :auto && "btn-primary btn-active",
+                @mode != :auto && "btn-outline"
               ]}
             >
-              OFF
+              AUTO
             </button>
             <button
               type="button"
@@ -42,7 +42,7 @@ defmodule LorxWeb.DeviceComponent do
               phx-target={@myself}
               phx-value-mode="on"
               class={[
-                  "btn btn-xs sm:btn-sm whitespace-nowrap",
+                "btn btn-xs sm:btn-sm whitespace-nowrap w-16",
                 @mode == :on && "btn-primary btn-active",
                 @mode != :on && "btn-outline"
               ]}
@@ -53,14 +53,14 @@ defmodule LorxWeb.DeviceComponent do
               type="button"
               phx-click="set_mode"
               phx-target={@myself}
-              phx-value-mode="auto"
+              phx-value-mode="off"
               class={[
-                  "btn btn-xs sm:btn-sm whitespace-nowrap",
-                @mode == :auto && "btn-primary btn-active",
-                @mode != :auto && "btn-outline"
+                "btn btn-xs sm:btn-sm whitespace-nowrap w-16",
+                @mode == :off && "btn-primary btn-active",
+                @mode != :off && "btn-outline"
               ]}
             >
-              AUTO
+              OFF
             </button>
           </div>
         </div>
