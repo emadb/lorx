@@ -7,11 +7,6 @@
   color: #ffffff !important; /* Cambia questo colore come preferisci */
 }
 
-/* Oppure se vuoi essere più specifico */
-.btn-primary:not(.btn-outline) {
-  color: #ffffff;
-}
-
 .widget {
   text-align: left;
   color: #000;
