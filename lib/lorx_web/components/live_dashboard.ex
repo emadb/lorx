@@ -1,7 +1,6 @@
 defmodule LorxWeb.LiveDashboard do
   use LorxWeb, :live_view
   alias Lorx.Device
-  alias Lorx.Management
 
   def mount(_params, _session, socket) do
     Phoenix.PubSub.subscribe(Lorx.PubSub, "dashboard")
