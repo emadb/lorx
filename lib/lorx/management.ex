@@ -22,6 +22,8 @@ defmodule Lorx.Management do
       {:ok, d} -> Lorx.DeviceSupervisor.start_child(d)
       {:error, e} -> {:error, e}
     end
+
+    result
   end
 
   def update_device(%Device{} = device, attrs) do

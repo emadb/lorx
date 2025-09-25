@@ -7,9 +7,9 @@ defmodule LorxWeb.LiveDashboard do
     Phoenix.PubSub.subscribe(Lorx.PubSub, "dashboard")
 
     devices =
-      Management.list_devices()
-      |> Enum.map(fn d ->
-        elem(Device.get_status(d.id), 1)
+      Lorx.DeviceSupervisor.list_children_ids()
+      |> Enum.map(fn id ->
+        elem(Device.get_status(id), 1)
       end)
       |> Enum.map(fn d ->
         %{

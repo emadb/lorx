@@ -30,4 +30,11 @@ defmodule Lorx.DeviceSupervisor do
     Management.list_devices()
     |> Enum.map(&start_child/1)
   end
+
+  def list_children_ids do
+    DynamicSupervisor.which_children(Lorx.DeviceSupervisor)
+    |> Enum.flat_map(fn {_, pid, _, _} ->
+      Registry.keys(Lorx.Device.Registry, pid)
+    end)
+  end
 end
