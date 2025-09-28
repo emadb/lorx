@@ -20,7 +20,7 @@ defmodule LorxWeb.DeviceComponent do
             {@name}
           </h2>
 
-          <h1 class="text-5xl font-bold">{@temp}°C</h1>
+          <h1 class="text-5xl font-bold">{@temp}°</h1>
           <div class="text-neutral-content">{@target_temp}°C</div>
         </div>
 
