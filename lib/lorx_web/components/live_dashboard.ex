@@ -3,7 +3,7 @@ defmodule LorxWeb.LiveDashboard do
   alias Lorx.Device
 
   def mount(_params, _session, socket) do
-    Phoenix.PubSub.subscribe(Lorx.PubSub, "dashboard")
+    Phoenix.PubSub.subscribe(Lorx.PubSub, "status_updated")
 
     devices =
       Lorx.DeviceSupervisor.list_children_ids()

@@ -46,7 +46,7 @@ defmodule Lorx.Device do
     Phoenix.PubSub.broadcast(Lorx.PubSub, "temperature_notification", evt_payload)
 
     if new_state.updated? do
-      Phoenix.PubSub.broadcast(Lorx.PubSub, "dashboard", evt_payload)
+      Phoenix.PubSub.broadcast(Lorx.PubSub, "status_updated", evt_payload)
     end
 
     {:noreply, new_state}
@@ -68,7 +68,7 @@ defmodule Lorx.Device do
       mode: new_state.mode
     }
 
-    Phoenix.PubSub.broadcast(Lorx.PubSub, "dashboard", evt_payload)
+    Phoenix.PubSub.broadcast(Lorx.PubSub, "status_updated", evt_payload)
     {:noreply, new_state}
   end
 end

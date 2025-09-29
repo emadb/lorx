@@ -75,7 +75,6 @@ defmodule LorxWeb.DeviceComponent do
   def handle_event("set_mode", %{"mode" => mode}, socket) when mode in ["on", "off", "auto"] do
     atom_mode = String.to_existing_atom(mode)
     Device.set_mode(socket.assigns.id, atom_mode)
-    # Optimistic assign; server broadcast will reconcile if needed
     {:noreply, assign(socket, :mode, atom_mode)}
   end
 
