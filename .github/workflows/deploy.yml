@@ -1,18 +1,31 @@
 name: Deploy
 
+# Run only after the CI workflow (build.yml -> name: Elixir CI) completes successfully
+# and only for the 'release' branch.
 on:
-  push:
-    branches:
-      - "release"
-    tags-ignore:
-      - "**"
+  workflow_run:
+    workflows: ["Elixir CI"]
+    types: [completed]
 
 env:
   CONTAINER_REGISTRY_URL: ghcr.io
   IMAGE_NAME: emadb/lorx
+  HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
 
 jobs:
+  # Guard job to ensure we only proceed on success AND correct branch
+  precheck:
+    runs-on: ubuntu-latest
+    if: >-
+      ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'release' }}
+    outputs:
+      proceed: ${{ steps.set.outputs.proceed }}
+    steps:
+      - id: set
+        run: echo "proceed=true" >> $GITHUB_OUTPUT
   setup:
+    if: ${{ needs.precheck.outputs.proceed == 'true' }}
+    needs: precheck
     runs-on: [self-hosted]
     outputs:
       version: ${{ steps.configure.outputs.version }}
@@ -24,8 +37,9 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
   package:
+    if: ${{ needs.precheck.outputs.proceed == 'true' }}
     runs-on: [self-hosted]
-    needs: setup
+    needs: [precheck, setup]
     env:
       VERSION: ${{ needs.setup.outputs.version }}
     steps:
@@ -44,21 +58,23 @@ jobs:
           push: true
 
   tag-and-release:
+    if: ${{ needs.precheck.outputs.proceed == 'true' }}
     runs-on: [self-hosted]
-    needs: setup
+    needs: [precheck, setup]
     env:
       VERSION: ${{ needs.setup.outputs.version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Create tag and release
-        run: gh release create ${{ env.VERSION }} --title ${{ env.VERSION }} --target ${{ github.REF_NAME }} docker-compose-prod.yml
+        run: gh release create ${{ env.VERSION }} --title ${{ env.VERSION }} --target ${{ env.HEAD_BRANCH }} docker-compose-prod.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
+    if: ${{ needs.precheck.outputs.proceed == 'true' }}
     runs-on: [self-hosted]
-    needs: [setup, package, tag-and-release]
+    needs: [precheck, setup, package, tag-and-release]
     environment: prod
     env:
       VERSION: ${{ needs.setup.outputs.version }}

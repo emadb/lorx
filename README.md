@@ -280,3 +280,80 @@ Focused tests exist for `DeviceState` decision logic. Recommended additions:
 TBD
 
 ---
+
+## 17. CI & Deployment
+
+| Workflow  | File                           | Trigger                                     | Branch Scope   | Purpose                                                        |
+| --------- | ------------------------------ | ------------------------------------------- | -------------- | -------------------------------------------------------------- |
+| Elixir CI | `.github/workflows/build.yml`  | `push` (any branch)                         | `*`            | Compile & basic validation (deps fetch + compile)              |
+| Deploy    | `.github/workflows/deploy.yml` | `workflow_run` (after successful Elixir CI) | `release` only | Build & push container image, create release tag, deploy stack |
+
+### Badges
+
+You can add these badges (uncomment if you like) at the top of the README:
+
+```
+![CI](https://github.com/emadb/lorx/actions/workflows/build.yml/badge.svg)
+![Deploy](https://github.com/emadb/lorx/actions/workflows/deploy.yml/badge.svg)
+```
+
+### Flow Summary
+
+1. Any push to any branch triggers the Elixir CI workflow.
+2. If (and only if) the branch is `release` and CI concludes with `success`, the Deploy workflow is triggered via `workflow_run`.
+3. Deploy workflow stages:
+   - `precheck`: Ensures CI succeeded and branch == `release`.
+   - `setup`: Generates a timestamp-based version (format `YYYY.MMDD.HHMM`).
+   - `package`: Builds and pushes a Docker image to GHCR (`ghcr.io/emadb/lorx:<version>`).
+   - `tag-and-release`: Creates a GitHub Release with the same version.
+   - `deploy`: Downloads release artifacts (compose file), performs a stack deploy on the self-hosted runner.
+
+### Versioning Strategy
+
+The version is time-based (build timestamp). This avoids collisions without manual tagging. If you later introduce semantic versions you can replace the `setup` step logic.
+
+### Redeploy / Rerun Behavior
+
+Re-running the successful CI for a `release` branch commit will (by default) trigger the Deploy workflow again and thus a new version (since timestamp regenerated). If you want to prevent redeploys via rerun, add a guard checking `run_attempt == 1` inside `precheck`.
+
+### Concurrency / Rate Limiting (Optional Enhancements)
+
+Add to the Deploy workflow to prevent overlapping deploys:
+
+```
+concurrency:
+   group: deploy-release
+   cancel-in-progress: true
+```
+
+### Required Secrets / Vars
+
+Secrets expected (GitHub UI → Repo → Settings → Secrets and variables):
+| Name | Type | Used In | Notes |
+|------|------|---------|-------|
+| `POSTGRES_PASSWORD` | Secret | Deploy | Injected into stack deploy env |
+| `GITHUB_TOKEN` | Built-in | Deploy | Release + artifact download |
+
+Variables (Repository Variables):
+| Name | Used In | Purpose |
+|------|---------|---------|
+| `ENV_NAME` | Deploy | Environment label / runtime flag |
+| `DEVICE_POLLING_INTERVAL` | Deploy | Device poll ms override |
+| `SAVING_INTERVAL` | Deploy | Persistence cadence ms |
+
+### Local Test of Docker Build
+
+Replicate locally what `package` does:
+
+```
+docker build -t ghcr.io/emadb/lorx:dev .
+```
+
+### Future Improvements
+
+- Add test (mix test) & dialyzer steps to CI before compile.
+- Cache deps & build artifacts (actions/cache) for faster runs.
+- Add a security scan (e.g., Trivy or Grype) on the image before push.
+- Push SBOM (CycloneDX) alongside the image.
+
+---
