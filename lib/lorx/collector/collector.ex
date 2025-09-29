@@ -20,11 +20,14 @@ defmodule Lorx.Collector.Monitor do
 
   def handle_info(%Lorx.NotifyTemp{} = data, state) do
     if interval_elapsed?(state.last_saved, state.saving_interval) do
+      target_temp =
+        if is_integer(data.target_temp), do: data.target_temp * 1.0, else: data.target_temp
+
       t = %TemperatureEntry{
         device_id: data.device_id,
         temp: data.temp,
         device_status: data.status,
-        target_temp: data.target_temp,
+        target_temp: target_temp,
         timestamp: DateTime.utc_now() |> DateTime.truncate(:second)
       }
 

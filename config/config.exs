@@ -13,6 +13,10 @@ config :lorx,
   ecto_repos: [Lorx.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :lorx, :device,
+  polling_interval: 10000,
+  saving_interval: 30000
+
 # Configures the endpoint
 config :lorx, LorxWeb.Endpoint,
   url: [host: "localhost"],

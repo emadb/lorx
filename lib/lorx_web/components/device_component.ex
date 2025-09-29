@@ -91,19 +91,7 @@ defmodule LorxWeb.DeviceComponent do
           other
       end
 
-    normalized_mode =
-      assigns
-      |> Map.get(:mode, socket.assigns[:mode] || :auto)
-      |> case do
-        m when is_binary(m) -> String.to_existing_atom(m)
-        m when is_atom(m) -> m
-        _ -> :auto
-      end
-
-    socket =
-      socket
-      |> assign(:mode, normalized_mode)
-      |> assign(Map.to_list(assigns))
+    socket = assign(socket, Map.to_list(assigns))
 
     {:ok, socket}
   end
