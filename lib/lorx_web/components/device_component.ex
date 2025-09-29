@@ -20,7 +20,7 @@ defmodule LorxWeb.DeviceComponent do
             {@name}
           </h2>
 
-          <h1 class="text-5xl font-bold">{@temp}°</h1>
+          <h1 class="text-5xl font-bold">{@temp}°C</h1>
           <div class="text-neutral-content">{@target_temp}°C</div>
         </div>
 
@@ -79,20 +79,6 @@ defmodule LorxWeb.DeviceComponent do
   end
 
   def update(assigns, socket) do
-    assigns =
-      case assigns do
-        %{data: %Lorx.NotifyTemp{} = data} ->
-          Map.merge(
-            assigns,
-            Map.take(Map.from_struct(data), [:temp, :status, :target_temp, :mode])
-          )
-
-        other ->
-          other
-      end
-
-    socket = assign(socket, Map.to_list(assigns))
-
-    {:ok, socket}
+    {:ok, assign(socket, assigns)}
   end
 end

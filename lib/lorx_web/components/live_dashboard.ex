@@ -25,7 +25,14 @@ defmodule LorxWeb.LiveDashboard do
   end
 
   def handle_info(%Lorx.NotifyTemp{} = data, socket) do
-    send_update(LorxWeb.DeviceComponent, id: data.device_id, data: data)
+    send_update(LorxWeb.DeviceComponent,
+      id: data.device_id,
+      temp: data.temp,
+      status: data.status,
+      target_temp: data.target_temp,
+      mode: data.mode
+    )
+
     {:noreply, socket}
   end
 end
