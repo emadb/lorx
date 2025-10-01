@@ -4,7 +4,10 @@ services:
   backend:
     image: ghcr.io/emadb/lorx:$VERSION
     ports:
-      - "80:4000"
+      - target: 4000
+        published: 80
+        protocol: tcp
+        mode: ingress
     deploy:
       mode: replicated
       replicas: 1
