@@ -2,8 +2,8 @@ name: Elixir CI
 
 on:
   push:
-    branches-ignore:
-      - "release"
+    branches:
+      - "*"
 
 jobs:
   build:
