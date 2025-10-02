@@ -1,11 +1,11 @@
 name: Deploy
 
-# Run only after the CI workflow (build.yml -> name: Elixir CI) completes successfully
-# and only for the 'release' branch.
 on:
-  workflow_run:
-    workflows: ["Elixir CI"]
-    types: [completed]
+  push:
+    branches:
+      - "release"
+    tags-ignore:
+      - "**"
 
 env:
   CONTAINER_REGISTRY_URL: ghcr.io
