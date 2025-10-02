@@ -10,7 +10,6 @@ on:
 env:
   CONTAINER_REGISTRY_URL: ghcr.io
   IMAGE_NAME: emadb/lorx
-  HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
 
 jobs:
   setup:
@@ -26,7 +25,7 @@ jobs:
 
   package:
     runs-on: [self-hosted]
-    needs: [setup]
+    needs: setup
     env:
       VERSION: ${{ needs.setup.outputs.version }}
     steps:
@@ -46,14 +45,14 @@ jobs:
 
   tag-and-release:
     runs-on: [self-hosted]
-    needs: [setup]
+    needs: setup
     env:
       VERSION: ${{ needs.setup.outputs.version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Create tag and release
-        run: gh release create ${{ env.VERSION }} --title ${{ env.VERSION }} --target ${{ env.HEAD_BRANCH }} docker-compose-prod.yml
+        run: gh release create ${{ env.VERSION }} --title ${{ env.VERSION }} --target ${{ github.REF_NAME }} docker-compose-prod.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
