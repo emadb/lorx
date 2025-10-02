@@ -13,19 +13,7 @@ env:
   HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
 
 jobs:
-  # Guard job to ensure we only proceed on success AND correct branch
-  precheck:
-    runs-on: ubuntu-latest
-    if: >-
-      ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'release' }}
-    outputs:
-      proceed: ${{ steps.set.outputs.proceed }}
-    steps:
-      - id: set
-        run: echo "proceed=true" >> $GITHUB_OUTPUT
   setup:
-    if: ${{ needs.precheck.outputs.proceed == 'true' }}
-    needs: precheck
     runs-on: [self-hosted]
     outputs:
       version: ${{ steps.configure.outputs.version }}
@@ -37,9 +25,8 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
   package:
-    if: ${{ needs.precheck.outputs.proceed == 'true' }}
     runs-on: [self-hosted]
-    needs: [precheck, setup]
+    needs: [setup]
     env:
       VERSION: ${{ needs.setup.outputs.version }}
     steps:
@@ -58,9 +45,8 @@ jobs:
           push: true
 
   tag-and-release:
-    if: ${{ needs.precheck.outputs.proceed == 'true' }}
     runs-on: [self-hosted]
-    needs: [precheck, setup]
+    needs: [setup]
     env:
       VERSION: ${{ needs.setup.outputs.version }}
     steps:
@@ -72,9 +58,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
-    if: ${{ needs.precheck.outputs.proceed == 'true' }}
     runs-on: [self-hosted]
-    needs: [precheck, setup, package, tag-and-release]
+    needs: [setup, package, tag-and-release]
     environment: prod
     env:
       VERSION: ${{ needs.setup.outputs.version }}
