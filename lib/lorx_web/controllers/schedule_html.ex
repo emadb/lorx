@@ -76,14 +76,14 @@ defmodule LorxWeb.ScheduleHTML do
 
   @doc false
   def group_schedules_by_day(schedules) do
-    day_names = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"]
-    
+    day_names = ["Monday", "Tuesday", "Wednesday", "Thursady", "Friday", "Saturday", "Sunday"]
+
     # Initialize empty map for each day
-    empty_week = 
+    empty_week =
       day_names
       |> Enum.with_index()
       |> Enum.into(%{}, fn {day_name, index} -> {index, %{name: day_name, schedules: []}} end)
-    
+
     # Group schedules by day
     schedules
     |> Enum.reduce(empty_week, fn schedule, acc ->
@@ -97,7 +97,7 @@ defmodule LorxWeb.ScheduleHTML do
             temp: schedule.temp,
             id: schedule.id
           }
-          
+
           update_in(day_acc[day_index].schedules, &[schedule_with_time | &1])
         else
           day_acc
