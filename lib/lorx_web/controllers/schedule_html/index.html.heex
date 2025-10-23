@@ -57,42 +57,7 @@
         </.link>
       </:actions>
     </.header>
-    
-<!-- New weekly schedule view -->
-    <div class="mt-6 grid grid-cols-1 lg:grid-cols-7 gap-4">
-      <div
-        :for={day_data <- group_schedules_by_day(schedules)}
-        class="bg-base-100 border border-base-300 rounded-lg p-4"
-      >
-        <h3 class="font-semibold text-center text-base-content/80 mb-3 pb-2 border-b border-base-300">
-          {day_data.name}
-        </h3>
 
-        <div
-          :if={length(day_data.schedules) == 0}
-          class="text-center text-base-content/50 text-sm italic"
-        >
-          Nessun programma
-        </div>
-
-        <div :if={length(day_data.schedules) > 0} class="space-y-2">
-          <div
-            :for={schedule <- day_data.schedules}
-            class="bg-base-200 rounded p-3 text-sm hover:bg-base-300 transition-colors cursor-pointer"
-            phx-click={JS.navigate(~p"/schedules/#{schedule.id}")}
-          >
-            <div class="font-medium text-primary">
-              {format_time_slot(schedule.start_time, schedule.end_time)}
-            </div>
-            <div class="text-base-content/80 mt-1">
-              <span class="font-semibold">{schedule.temp}°C</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-<!-- Legacy table view (commented out, but kept for reference)
     <.table
       id={"schedules-" <> to_string(List.first(schedules).device_id)}
       rows={Enum.sort_by(schedules, & &1.start_time)}
@@ -139,6 +104,5 @@
         </.link>
       </:action>
     </.table>
-    -->
   </div>
 </div>
