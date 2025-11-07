@@ -3,6 +3,7 @@ defmodule LorxWeb.Router do
   alias DeviceController
   alias ScheduleController
   alias TemperatureHistoryController
+  alias HealthController
   use LorxWeb, :router
 
   pipeline :browser do
@@ -30,9 +31,10 @@ defmodule LorxWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", LorxWeb do
-  #   pipe_through :api
-  # end
+  scope "/", LorxWeb do
+    pipe_through :api
+    get "/up", HealthController, :up
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:lorx, :dev_routes) do
