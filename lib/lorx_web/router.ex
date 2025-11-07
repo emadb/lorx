@@ -3,6 +3,7 @@ defmodule LorxWeb.Router do
   alias DeviceController
   alias ScheduleController
   alias TemperatureHistoryController
+  alias HealthController
   use LorxWeb, :router
 
   pipeline :browser do
@@ -34,6 +35,11 @@ defmodule LorxWeb.Router do
     pipe_through :api
 
     get "/current", CurrentController, :index
+  end
+
+  scope "/", LorxWeb do
+    pipe_through :api
+    get "/up", HealthController, :up
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
