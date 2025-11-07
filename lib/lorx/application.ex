@@ -29,6 +29,8 @@ defmodule Lorx.Application do
     opts = [strategy: :one_for_one, name: Lorx.Supervisor]
     res = Supervisor.start_link(children, opts)
 
+    Lorx.Release.migrate(false)
+
     _ = Lorx.DeviceSupervisor.spawn_children()
 
     res
