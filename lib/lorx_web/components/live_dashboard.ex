@@ -4,6 +4,7 @@ defmodule LorxWeb.LiveDashboard do
 
   def mount(_params, _session, socket) do
     Phoenix.PubSub.subscribe(Lorx.PubSub, "status_updated")
+    Phoenix.PubSub.subscribe(Lorx.PubSub, "power_consumption")
 
     devices =
       Lorx.DeviceSupervisor.list_children_ids()
@@ -31,6 +32,17 @@ defmodule LorxWeb.LiveDashboard do
       status: data.status,
       target_temp: data.target_temp,
       mode: data.mode
+    )
+
+    {:noreply, socket}
+  end
+
+  def handle_info(data, socket) do
+    send_update(LorxWeb.PowerConsumptionComponent,
+      id: "power-consumption",
+      w: data.act_power,
+      volt: data.voltage,
+      current: data.current
     )
 
     {:noreply, socket}

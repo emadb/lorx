@@ -28,6 +28,8 @@ defmodule Lorx.PowerMeter.Server do
     Process.send_after(self(), :check_consumption, 5000)
     value = Lorx.PowerMeter.ApiClient.get_consumption(pm_ip)
 
+    Phoenix.PubSub.broadcast(Lorx.PubSub, "power_consumption", value)
+
     if interval_elapsed?(state.last_saved, @fifteen_minutes) do
       w = average(state.values)
 

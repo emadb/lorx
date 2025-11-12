@@ -1,4 +1,6 @@
 <div class="grid grid-flow-row gap-4">
+  <.live_component module={LorxWeb.PowerConsumptionComponent} id="power-consumption" />
+
   <.live_component
     :for={d <- @devices}
     module={LorxWeb.DeviceComponent}
