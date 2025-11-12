@@ -23,7 +23,8 @@ end
 if config_env() == :prod do
   config :lorx, :device,
     polling_interval: String.to_integer(System.get_env("DEVICE_POLLING_INTERVAL") || "300000"),
-    saving_interval: String.to_integer(System.get_env("SAVING_INTERVAL") || "900000")
+    saving_interval: String.to_integer(System.get_env("SAVING_INTERVAL") || "900000"),
+    pm_ip: System.get_env("POWER_METER_IP") || "192.168.0.50"
 
   database_url =
     System.get_env("DATABASE_URL") ||

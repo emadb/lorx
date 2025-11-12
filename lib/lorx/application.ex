@@ -20,7 +20,8 @@ defmodule Lorx.Application do
       LorxWeb.Endpoint,
       {Registry, [keys: :unique, name: Lorx.Device.Registry]},
       Lorx.DeviceSupervisor,
-      {Lorx.Collector.Monitor, []}
+      {Lorx.Collector.Monitor, []},
+      {Lorx.PowerMeter.Server, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

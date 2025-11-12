@@ -19,6 +19,7 @@ services:
       - ENV_NAME=$ENV_NAME
       - DEVICE_POLLING_INTERVAL=300000
       - SAVING_INTERVAL=900000
+      - POWER_METER_IP=192.168.0.50
     networks:
       - common
 
