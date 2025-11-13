@@ -12,10 +12,17 @@ defmodule LorxWeb.DeviceComponent do
           <h2 class="card-title">
             <div class={[
               "badge",
-              if(@status == :idle,
-                do: "badge-ghost",
-                else: "badge-success"
-              )
+              case @status do
+                :idle ->
+                  "badge-ghost"
+
+                :heating ->
+                  "badge-success"
+
+                _ ->
+                  IO.inspect(@status, label: ">>>>")
+                  "badge-error"
+              end
             ]} />
             {@name}
           </h2>
