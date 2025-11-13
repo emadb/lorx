@@ -23,6 +23,8 @@ defmodule LorxWeb.Router do
     resources "/devices", DeviceController
     resources "/schedules", ScheduleController
     get "/temperature_history", TemperatureHistoryController, :index
+    get "/admin", AdminController, :index
+    post "/admin/restart_devices", AdminController, :restart_devices
     live "/dashboard", LiveDashboard
     live "/", LiveDashboard
   end

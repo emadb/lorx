@@ -1,0 +1,16 @@
+<!-- filepath: /Users/ema/dev/lorx_apps/lorx/lib/lorx_web/controllers/admin_html/index.html.heex -->
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold text-gray-900 mb-6">Amministrazione</h1>
+  
+  <div class="bg-white shadow rounded-lg p-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Gestione Device</h2>
+    <p class="text-gray-600 mb-4">Riavvia tutti i device del sistema</p>
+    
+    <form method="post" action="/admin/restart_devices" onsubmit="return confirm('Sei sicuro di voler riavviare tutti i device?');">
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200">
+        Riavvia tutti i device
+      </button>
+    </form>
+  </div>
+</div>
