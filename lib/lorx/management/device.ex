@@ -5,6 +5,7 @@ defmodule Lorx.Management.Device do
   schema "devices" do
     field :name, :string
     field :ip, :string
+    field :enabled, :boolean
 
     timestamps(type: :utc_datetime)
   end

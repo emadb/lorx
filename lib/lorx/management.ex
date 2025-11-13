@@ -7,7 +7,9 @@ defmodule Lorx.Management do
   alias Lorx.Management.Device
 
   def list_devices do
-    Repo.all(Device)
+    Device
+    |> where([d], d.enabled)
+    |> Repo.all()
   end
 
   def get_device!(id), do: Repo.get!(Device, id)
