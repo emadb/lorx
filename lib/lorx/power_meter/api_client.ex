@@ -1,4 +1,6 @@
 defmodule Lorx.PowerMeter.ApiClient do
+  require Logger
+
   def get_consumption(ip) do
     "http://#{ip}/rpc/EM1.GetStatus?id=0"
     |> Tesla.get!()
