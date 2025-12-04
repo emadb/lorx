@@ -16,7 +16,8 @@ config :lorx,
 config :lorx, :device,
   polling_interval: 10000,
   saving_interval: 30000,
-  pm_ip: "192.168.0.50"
+  pm_ip: "192.168.0.50",
+  max_power: 5000
 
 # Configures the endpoint
 config :lorx, LorxWeb.Endpoint,

@@ -13,4 +13,26 @@ defmodule Lorx.PowerMeter.ApiClient do
       }
     end)
   end
+
+  def set_alarm(ip) do
+    case Tesla.get("http://#{ip}/rpc/Switch.Set?id=0&on=true") do
+      {:ok, _} ->
+        {:ok, :on}
+
+      {:error, e} ->
+        Logger.error("PowerMeter.switch_on(#{ip})", %{error: e})
+        {:ok, :error}
+    end
+  end
+
+  def unset_alarm(ip) do
+    case Tesla.get("http://#{ip}/rpc/Switch.Set?id=0&on=false") do
+      {:ok, _} ->
+        {:ok, :on}
+
+      {:error, e} ->
+        Logger.error("PowerMeter.switch_off(#{ip})", %{error: e})
+        {:ok, :error}
+    end
+  end
 end

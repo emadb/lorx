@@ -4,6 +4,7 @@ defmodule Lorx.PowerMeter.Server do
   alias Lorx.Repo
 
   @fifteen_minutes 900_000
+  @alarm_timeout 1_000
 
   def start_link([]) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -30,6 +31,9 @@ defmodule Lorx.PowerMeter.Server do
 
     Phoenix.PubSub.broadcast(Lorx.PubSub, "power_consumption", value)
 
+    max_power = Application.get_env(:lorx, :device)[:max_power]
+    check_overload(value, max_power)
+
     if interval_elapsed?(state.last_saved, @fifteen_minutes) do
       w = average(state.values)
 
@@ -49,6 +53,12 @@ defmodule Lorx.PowerMeter.Server do
     end
   end
 
+  def handle_info(:unset_alarm, state) do
+    pm_ip = Application.get_env(:lorx, :device)[:pm_ip]
+    Lorx.PowerMeter.ApiClient.unset_alarm(pm_ip)
+    {:noreply, state}
+  end
+
   # TODO: non tornare tutto lo stato
   def handle_call(:get_status, _from, state) do
     # last = List.last(state.values)
@@ -65,5 +75,15 @@ defmodule Lorx.PowerMeter.Server do
   defp interval_elapsed?(last_saved, saving_interval) do
     delta = DateTime.add(last_saved, div(saving_interval, 1000), :second)
     DateTime.before?(delta, DateTime.utc_now())
+  end
+
+  defp check_overload(%{act_power: watt}, max) when watt > max do
+    pm_ip = Application.get_env(:lorx, :device)[:pm_ip]
+    Lorx.PowerMeter.ApiClient.set_alarm(pm_ip)
+    Process.send_after(self(), :unset_alarm, @alarm_timeout)
+  end
+
+  defp check_overload(%{act_power: _}, _) do
+    :ok
   end
 end
