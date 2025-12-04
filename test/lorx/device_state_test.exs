@@ -14,10 +14,10 @@ defmodule Lorx.DeviceStateTest do
     [
       {DeviceClient, [],
        [
-         get_temp: fn _ip -> temp end,
-         get_status: fn _ip -> status end,
-         switch_on: fn _ip -> :heating end,
-         switch_off: fn _ip -> :idle end
+         get_temp: fn _ip -> {:ok, temp} end,
+         get_status: fn _ip -> {:ok, status} end,
+         switch_on: fn _ip -> {:ok, :heating} end,
+         switch_off: fn _ip -> {:ok, :idle} end
        ]},
       {Lorx.Management, [],
        [
@@ -86,7 +86,7 @@ defmodule Lorx.DeviceStateTest do
 
     days =
       List.update_at(
-        ["false", "false", "false", "false", "false", "false", "false"],
+        [false, false, false, false, false, false, false],
         today - 1,
         fn _ ->
           "true"
@@ -104,7 +104,7 @@ defmodule Lorx.DeviceStateTest do
   end
 
   test "always off current_temp=18 target_temp=20 status=:idle => should remain idle" do
-    days = ["false", "false", "false", "false", "false", "false", "false"]
+    days = [false, false, false, false, false, false, false]
 
     with_mocks stub(18, 20, :idle, days) do
       new_state =
