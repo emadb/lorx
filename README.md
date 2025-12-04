@@ -270,8 +270,8 @@ Focused tests exist for `DeviceState` decision logic. Recommended additions:
 
 ## 15. Original TODO (Superseded / Integrated)
 
-- [ ] Dashboard device card: show active schedule window
-- [ ] Temperature history chart
+- [x] Dashboard device card: show active schedule window
+- [x] Temperature history chart
 - [ ] External temperature ingestion API
 - [ ] Authentication layer
 - [ ] Multi-tenant (multi-house, cloud-ready)
