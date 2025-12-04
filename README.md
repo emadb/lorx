@@ -6,7 +6,8 @@ Modular home climate monitoring & control platform (Elixir / Phoenix / OTP).
 
 </div>
 
-<img width="910" height="1191" alt="Screenshot 2025-12-04 at 21 03 29" src="https://github.com/user-attachments/assets/991315e0-41c8-4d14-82de-cb5aa77d3f5d" />
+<img width="884" height="1175" alt="Screenshot 2025-12-04 at 21 03 29" src="https://github.com/user-attachments/assets/3c4fb565-05cc-40ce-b784-65738be49d6b" />
+
 
 
 ---
