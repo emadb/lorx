@@ -38,7 +38,7 @@ defmodule Lorx.PowerMeter.Server do
     Phoenix.PubSub.broadcast(Lorx.PubSub, "power_consumption", value)
 
     max_power = Application.get_env(:lorx, :device)[:max_power]
-    overloads = overload?(value, max_power, state.overload_count)
+    overloads = overload?(value, max_power, state.overload_counter)
 
     if interval_elapsed?(state.last_saved, @fifteen_minutes) do
       w = average(state.values)
