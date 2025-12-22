@@ -4,14 +4,20 @@ defmodule Lorx.PowerMeter.Server do
   alias Lorx.Repo
 
   @fifteen_minutes 900_000
-  @alarm_timeout 1_000
+  @alarm_duration 1_500
+  @overload_count_max 3
 
   def start_link([]) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   def init([]) do
-    {:ok, %{values: [], last_saved: DateTime.utc_now()}, {:continue, :setup}}
+    {:ok,
+     %{
+       values: [],
+       last_saved: DateTime.utc_now(),
+       overload_counter: 0
+     }, {:continue, :setup}}
   end
 
   def get_status() do
@@ -32,7 +38,7 @@ defmodule Lorx.PowerMeter.Server do
     Phoenix.PubSub.broadcast(Lorx.PubSub, "power_consumption", value)
 
     max_power = Application.get_env(:lorx, :device)[:max_power]
-    check_overload(value, max_power)
+    overloads = overload?(value, max_power, state.overload_count)
 
     if interval_elapsed?(state.last_saved, @fifteen_minutes) do
       w = average(state.values)
@@ -45,11 +51,17 @@ defmodule Lorx.PowerMeter.Server do
 
       Repo.insert!(pe)
 
-      new_state = %{state | last_saved: DateTime.utc_now(), values: []}
+      new_state = %{
+        state
+        | last_saved: DateTime.utc_now(),
+          values: [],
+          overload_counter: overloads
+      }
+
       {:noreply, new_state}
     else
       values = state.values ++ [value]
-      {:noreply, %{state | values: values}}
+      {:noreply, %{state | values: values, overload_counter: overloads}}
     end
   end
 
@@ -61,7 +73,6 @@ defmodule Lorx.PowerMeter.Server do
 
   # TODO: non tornare tutto lo stato
   def handle_call(:get_status, _from, state) do
-    # last = List.last(state.values)
     {:reply, {:ok, state}, state}
   end
 
@@ -77,13 +88,14 @@ defmodule Lorx.PowerMeter.Server do
     DateTime.before?(delta, DateTime.utc_now())
   end
 
-  defp check_overload(%{act_power: watt}, max) when watt > max do
+  defp overload?(%{act_power: watt}, max, count)
+       when watt > max and count >= @overload_count_max do
     pm_ip = Application.get_env(:lorx, :device)[:pm_ip]
     Lorx.PowerMeter.ApiClient.set_alarm(pm_ip)
-    Process.send_after(self(), :unset_alarm, @alarm_timeout)
+    Process.send_after(self(), :unset_alarm, @alarm_duration)
+    0
   end
 
-  defp check_overload(%{act_power: _}, _) do
-    :ok
-  end
+  defp overload?(%{act_power: watt}, max, count) when watt > max, do: count + 1
+  defp overload?(%{act_power: _}, _, _), do: 0
 end
