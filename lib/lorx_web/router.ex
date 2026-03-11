@@ -30,9 +30,11 @@ defmodule LorxWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", LorxWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", LorxWeb.Api do
+    pipe_through :api
+
+    get "/current", CurrentController, :index
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:lorx, :dev_routes) do
