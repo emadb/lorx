@@ -19,6 +19,9 @@ config :lorx, :device,
   pm_ip: "192.168.0.50",
   max_power: 5500
 
+config :lorx, :temperature_history,
+  max_chart_points: 1000
+
 # Configures the endpoint
 config :lorx, LorxWeb.Endpoint,
   url: [host: "localhost"],

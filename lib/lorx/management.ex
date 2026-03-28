@@ -122,4 +122,63 @@ defmodule Lorx.Management do
     |> distinct(true)
     |> Repo.all()
   end
+
+  @doc """
+  Get temperature history with automatic sampling when dataset is large.
+  Limits results to max_points (default from config or 1000) by aggregating into time buckets.
+  """
+  def get_history_sampled(from, to) do
+    max_points = Application.get_env(:lorx, :temperature_history)[:max_chart_points] || 1000
+    get_history_sampled(from, to, max_points)
+  end
+
+  def get_history_sampled(from, to, max_points) when is_integer(max_points) do
+    # Fetch all data points
+    all_data = get_history(from, to)
+    count = length(all_data)
+
+    # Calculate sampling interval
+    n = div(count, max_points)
+
+    if n <= 1 do
+      # Return all data if sampling not needed
+      all_data
+    else
+      # Keep every Nth point
+      all_data
+      |> Enum.with_index()
+      |> Enum.filter(fn {_entry, index} -> rem(index, n) == 0 end)
+      |> Enum.map(fn {entry, _index} -> entry end)
+    end
+  end
+
+  def get_history_sampled(from, to, device_id) when device_id in [nil, "", :all] do
+    max_points = Application.get_env(:lorx, :temperature_history)[:max_chart_points] || 1000
+    get_history_sampled(from, to, max_points)
+  end
+
+  def get_history_sampled(from, to, device_id) do
+    max_points = Application.get_env(:lorx, :temperature_history)[:max_chart_points] || 1000
+    get_history_sampled(from, to, device_id, max_points)
+  end
+
+  def get_history_sampled(from, to, device_id, max_points) do
+    # Fetch all data points for this device
+    all_data = get_history(from, to, device_id)
+    count = length(all_data)
+
+    # Calculate sampling interval
+    n = div(count, max_points)
+
+    if n <= 1 do
+      # Return all data if sampling not needed
+      all_data
+    else
+      # Keep every Nth point
+      all_data
+      |> Enum.with_index()
+      |> Enum.filter(fn {_entry, index} -> rem(index, n) == 0 end)
+      |> Enum.map(fn {entry, _index} -> entry end)
+    end
+  end
 end

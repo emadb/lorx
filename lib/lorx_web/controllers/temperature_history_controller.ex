@@ -6,7 +6,7 @@ defmodule LorxWeb.TemperatureHistoryController do
     {:ok, {from_dt, to_dt}} = parse_range(params)
     device_id = Map.get(params, "device_id")
 
-    entries = Management.get_history(from_dt, to_dt, normalize_device(device_id))
+    entries = Management.get_history_sampled(from_dt, to_dt, normalize_device(device_id))
     devices = Management.list_devices()
 
     render(conn, :index,
