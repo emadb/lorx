@@ -52,7 +52,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Create tag and release
-        run: gh release create ${{ env.VERSION }} --title ${{ env.VERSION }} --target ${{ github.REF_NAME }} docker-compose-prod.yml
+        run: gh release create ${{ env.VERSION }} --title ${{ env.VERSION }} --target ${{ github.REF_NAME }} docker-compose-server.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -67,14 +67,16 @@ jobs:
         run: gh release download ${{ env.VERSION }} -R ${{ github.REPOSITORY }} --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Setup infrastructure (if needed) and deploy artifacts
+      - name: Deploy
         run: |
-          docker stack config --compose-file docker-compose-prod.yml > final.docker-compose.yml
-          docker stack deploy --compose-file final.docker-compose.yml --resolve-image always --with-registry-auth lorx
+          docker compose -f docker-compose-prod.yml pull app
+          docker compose -f docker-compose-prod.yml up -d
+          sleep 3
+          docker compose -f docker-compose-prod.yml exec app /app/bin/lorx eval "Lorx.Release.migrate()"
         env:
-          DATABASE_URL: postgresql://postgres:postgres@postgresql/lorx_dev
-          SECRET_KEY_BAS: =xhSxmI3mCFHOfGwkc483qhI1dkXSrw3yh6XniKW88HmcoDSAUcYaW7gObmfz8Occ
+          VERSION: ${{ env.VERSION }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           ENV_NAME: ${{ vars.ENV_NAME }}
           DEVICE_POLLING_INTERVAL: ${{ vars.DEVICE_POLLING_INTERVAL }}
           SAVING_INTERVAL: ${{ vars.SAVING_INTERVAL }}
