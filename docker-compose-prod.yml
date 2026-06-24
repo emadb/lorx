@@ -1,22 +1,14 @@
-version: "3.9"
-
 services:
   backend:
-    image: ghcr.io/emadb/lorx:$VERSION
+    image: ghcr.io/emadb/lorx:${VERSION}
+    pull_policy: always
+    restart: unless-stopped
     ports:
-      - target: 4000
-        published: 80
-        protocol: tcp
-        mode: ingress
-    deploy:
-      mode: replicated
-      replicas: 1
-      restart_policy:
-        condition: any
+      - "80:4000"
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgresql/lorx_dev
       - SECRET_KEY_BASE=xhSxmI3mCFHOfGwkc483qhI1dkXSrw3yh6XniKW88HmcoDSAUcYaW7gObmfz8Occ
-      - ENV_NAME=$ENV_NAME
+      - ENV_NAME=${ENV_NAME}
       - DEVICE_POLLING_INTERVAL=300000
       - SAVING_INTERVAL=900000
       - POWER_METER_IP=192.168.0.50

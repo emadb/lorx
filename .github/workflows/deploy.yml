@@ -7,27 +7,17 @@ on:
     tags-ignore:
       - "**"
 
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
 env:
   CONTAINER_REGISTRY_URL: ghcr.io
   IMAGE_NAME: emadb/lorx
 
 jobs:
-  setup:
+  build:
     runs-on: [self-hosted]
-    outputs:
-      version: ${{ steps.configure.outputs.version }}
-    steps:
-      - id: configure
-        name: Configure environment
-        run: |
-          VERSION=`date '+%Y.%m%d.%H%M'`
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-  package:
-    runs-on: [self-hosted]
-    needs: setup
-    env:
-      VERSION: ${{ needs.setup.outputs.version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -40,42 +30,22 @@ jobs:
         with:
           context: .
           file: Dockerfile
-          tags: "${{ env.CONTAINER_REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}"
           push: true
-
-  tag-and-release:
-    runs-on: [self-hosted]
-    needs: setup
-    env:
-      VERSION: ${{ needs.setup.outputs.version }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Create tag and release
-        run: gh release create ${{ env.VERSION }} --title ${{ env.VERSION }} --target ${{ github.REF_NAME }} docker-compose-prod.yml
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tags: |
+            ${{ env.CONTAINER_REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
+            ${{ env.CONTAINER_REGISTRY_URL }}/${{ env.IMAGE_NAME }}:latest
 
   deploy:
     runs-on: [self-hosted]
-    needs: [setup, package, tag-and-release]
+    needs: build
     environment: prod
-    env:
-      VERSION: ${{ needs.setup.outputs.version }}
     steps:
-      - name: Download artifacts
-        run: gh release download ${{ env.VERSION }} -R ${{ github.REPOSITORY }} --clobber
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Setup infrastructure (if needed) and deploy artifacts
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Pull and deploy
         run: |
-          docker stack config --compose-file docker-compose-prod.yml > final.docker-compose.yml
-          docker stack deploy --compose-file final.docker-compose.yml --resolve-image always --with-registry-auth lorx
+          docker compose -f docker-compose-prod.yml pull
+          docker compose -f docker-compose-prod.yml up -d
         env:
-          DATABASE_URL: postgresql://postgres:postgres@postgresql/lorx_dev
-          SECRET_KEY_BAS: =xhSxmI3mCFHOfGwkc483qhI1dkXSrw3yh6XniKW88HmcoDSAUcYaW7gObmfz8Occ
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          VERSION: ${{ github.run_number }}
           ENV_NAME: ${{ vars.ENV_NAME }}
-          DEVICE_POLLING_INTERVAL: ${{ vars.DEVICE_POLLING_INTERVAL }}
-          SAVING_INTERVAL: ${{ vars.SAVING_INTERVAL }}
-          POWER_METER_IP: ${{ vars.POWER_METER_IP }}
