@@ -4,7 +4,7 @@ defmodule Lorx.MixProject do
   def project do
     [
       app: :lorx,
-      version: "0.1.0",
+      version: "0.1.1",
       elixir: "~> 1.19.0",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
