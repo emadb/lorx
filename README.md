@@ -230,7 +230,15 @@ Long Term:
 mix deps.get
 mix ecto.setup   # creates & migrates DB, loads seeds if added
 mix phx.server
+# or, for an interactive shell and HTTP server:
+iex -S mix phx.server
 ```
+
+Set `EXTERNAL_TEMP_IP` to the external meter's IP address (and optional port) to
+poll `http://<ip>/temp` immediately and every five minutes. The device must
+return JSON such as `{"temp": 18.0}`. Leave the variable unset to disable
+polling; the dashboard then marks the latest saved temperature as not configured.
+Successful readings are stored in `external_temperature_history`.
 
 Environment config keys (example):
 
