@@ -25,6 +25,7 @@ if config_env() == :prod do
     polling_interval: String.to_integer(System.get_env("DEVICE_POLLING_INTERVAL") || "300000"),
     saving_interval: String.to_integer(System.get_env("SAVING_INTERVAL") || "900000"),
     pm_ip: System.get_env("POWER_METER_IP") || "192.168.0.50",
+    external_temp_ip: System.get_env("EXTERNAL_TEMP_IP") || "192.168.0.93",
     max_power: 5500
 
   database_url =

@@ -2,7 +2,13 @@ defmodule LorxWeb.PowerConsumptionComponent do
   use LorxWeb, :live_component
 
   def mount(socket) do
-    {:ok, assign(socket, current_consumption: nil, voltage: nil, current: nil)}
+    {:ok,
+     assign(socket,
+       current_consumption: nil,
+       external_temp: nil,
+       external_configured?: false,
+       current: nil
+     )}
   end
 
   def update(assigns, socket) do
@@ -14,14 +20,22 @@ defmodule LorxWeb.PowerConsumptionComponent do
         socket.assigns.current_consumption
       end
 
-    voltage = assigns[:volt] || socket.assigns.voltage
-    current = assigns[:current] || socket.assigns.current
+    external_temp =
+      if Map.has_key?(assigns, :external_temp),
+        do: assigns.external_temp,
+        else: socket.assigns.external_temp
+
+    external_configured? =
+      if Map.has_key?(assigns, :external_configured?),
+        do: assigns.external_configured?,
+        else: socket.assigns.external_configured?
 
     {:ok,
      assign(socket,
        current_consumption: consumption_kw,
-       voltage: voltage,
-       current: current
+       external_temp: external_temp,
+       external_configured?: external_configured?,
+       current: assigns[:current] || socket.assigns.current
      )}
   end
 
@@ -37,7 +51,6 @@ defmodule LorxWeb.PowerConsumptionComponent do
     {:noreply,
      assign(socket,
        current_consumption: consumption_kw,
-       voltage: power_data.voltage,
        current: power_data.current
      )}
   end
@@ -59,13 +72,17 @@ defmodule LorxWeb.PowerConsumptionComponent do
           </div>
 
           <div class="text-center">
-            <div class="text-sm text-gray-500 mb-1">Tensione</div>
-            <%= if @voltage do %>
-              <div class="text-xl font-bold">
-                {Float.round(@voltage, 1)} V
-              </div>
-            <% else %>
-              <div class="text-gray-500">--</div>
+            <div class="text-sm text-gray-500 mb-1">Temperatura Esterna</div>
+            <%= cond do %>
+              <% @external_temp == :error -> %>
+                <div class="text-red-600">Errore</div>
+              <% is_number(@external_temp) -> %>
+                <div class="text-xl font-bold">{Float.round(@external_temp * 1.0, 1)} °C</div>
+              <% true -> %>
+                <div class="text-gray-500">--</div>
+            <% end %>
+            <%= unless @external_configured? do %>
+              <div class="text-sm text-gray-500">Non configurato</div>
             <% end %>
           </div>
 

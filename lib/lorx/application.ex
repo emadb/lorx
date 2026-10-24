@@ -21,7 +21,8 @@ defmodule Lorx.Application do
       {Registry, [keys: :unique, name: Lorx.Device.Registry]},
       Lorx.DeviceSupervisor,
       {Lorx.Collector.Monitor, []},
-      {Lorx.PowerMeter.Server, []}
+      {Lorx.PowerMeter.Server, []},
+      {Lorx.ExternalMeter.Server, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
