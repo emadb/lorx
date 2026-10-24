@@ -17,7 +17,7 @@ config :lorx, :device,
   polling_interval: 10000,
   saving_interval: 30000,
   pm_ip: "192.168.0.50",
-  external_temp_ip: "192.168.0.50",
+  external_temp_ip: "192.168.0.93",
   max_power: 5500,
   external_temp_interval: 300_000
 
